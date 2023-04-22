@@ -1,5 +1,5 @@
 import App from '@/App';
-import Login from '@/views/login/Login';
+import Home from '@/views/Home';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const Router = () => {
@@ -9,8 +9,8 @@ const Router = () => {
       element: <App />,
       children: [
         {
-          path: 'login',
-          element: <Login />,
+          path: '/',
+          element: <Home />,
         },
       ],
     },
