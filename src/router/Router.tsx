@@ -5,12 +5,12 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 const Router = () => {
   const router = createBrowserRouter([
     {
-      path: '',
-      element: <App />,
+      path: 'home',
+      element: <Home />,
       children: [
         {
-          path: '/',
-          element: <Home />,
+          path: 'login',
+          element: <div>Login page</div>
         },
       ],
     },
