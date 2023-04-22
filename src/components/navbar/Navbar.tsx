@@ -1,4 +1,4 @@
-import Icon from "../icons/Icon"
+import Icon from "@components/icons/Icon"
 import { navbarClass, navbarIconClass } from "./navbar.css"
 
 const Navbar =()=>{
