@@ -1,4 +1,4 @@
-import Login from '@components/login/Login';
+import Login from '@/components/forms/login/Login';
 import Home from '@views/Home';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const Router = () => {
       children: [
         {
           path: 'login',
-          element: <Login />
+          element: <Login />,
         },
       ],
     },

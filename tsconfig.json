@@ -22,6 +22,7 @@
       "@router/*": ["src/router/*"],
       "@styles/*": ["src/styles/*"],
       "@views/*": ["src/views/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"],

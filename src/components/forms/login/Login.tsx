@@ -1,13 +1,16 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { inputFormClass, loginContainerClass, loginFormClass } from './login.css';
+import { useTranslation } from 'react-i18next';
 
 function Login() {
+  const { t } = useTranslation();
   const validationLoginSchema = z.object({
     username: z.string().nonempty(),
     password: z.string().nonempty(),
-  })
-  
+  });
+
   type TValidationLoginSchema = z.infer<typeof validationLoginSchema>;
 
   const {
@@ -23,12 +26,15 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('username')} disabled={isSubmitting} />
-      {errors.username && <span>This field is required</span>}
-      <input {...register('password')} disabled={isSubmitting}/>
-      <input type="submit" disabled={!isSubmitted} />
-    </form>
+    <div className={loginContainerClass}>
+      <p>{t('home.login.title')}</p>
+      <form className={loginFormClass} onSubmit={handleSubmit(onSubmit)}>
+        <input className={inputFormClass} {...register('username')} disabled={isSubmitting} />
+        {errors.username && <span>This field is required</span>}
+        <input {...register('password')} disabled={isSubmitting} />
+        <button type="submit" disabled={!isSubmitted}></button>
+      </form>
+    </div>
   );
 }
 

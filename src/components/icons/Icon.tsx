@@ -1,4 +1,4 @@
-import DefaultProfilePictureIcon from "./svg/DefaultProfilePictureIcon";
+import DefaultProfilePictureIcon from './svg/DefaultProfilePictureIcon';
 
 const icons = {
   defaultProfilePic: DefaultProfilePictureIcon,
@@ -6,7 +6,7 @@ const icons = {
 
 export type IconName = keyof typeof icons;
 
-export type IconProps = { name: IconName, className: string };
+export type IconProps = { name: IconName; className: string };
 
 const Icon = ({ name, className }: IconProps) => {
   const SVG = icons[name];
@@ -14,7 +14,7 @@ const Icon = ({ name, className }: IconProps) => {
     <div className={className}>
       <SVG />
     </div>
-  )
-}
+  );
+};
 
 export default Icon;

@@ -1,15 +1,13 @@
-import Icon from "@components/icons/Icon"
-import { navbarClass, navbarIconClass } from "./navbar.css"
+import Icon from '@components/icons/Icon';
+import { navbarClass, navbarIconClass } from './navbar.css';
 
-const Navbar =()=>{
-
-return (
+const Navbar = () => {
+  return (
     <nav className={navbarClass}>
-        <p>ASTR</p>
-        <Icon name="defaultProfilePic" className={navbarIconClass} />
+      <p>ASTR</p>
+      <Icon name="defaultProfilePic" className={navbarIconClass} />
     </nav>
-)    
+  );
+};
 
-}
-
-export default Navbar
+export default Navbar;
