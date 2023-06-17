@@ -16,7 +16,7 @@ const themeColors = {
   senary: '#43655A',
 };
 
-const shadesColors = {
+ const shadesColors = {
   shade1: '#F1F1F1',
   shade2: '#BCBCBC',
   shade3: '#898989',
@@ -40,6 +40,7 @@ export const vars = createGlobalTheme(':root', {
     l: '18px',
     xl: '20px',
     xxl: '24px',
+    xxxl: '64px'
   },
   space: {
     xs: '4px',
