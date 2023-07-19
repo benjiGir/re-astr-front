@@ -31,11 +31,11 @@ function Login() {
     <div
       className={stack({
         height: '50vh',
-        width: '40vw',
+        width: '30vw',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingX: 'spacing.l',
-        backgroundColor: 'colors.shade1',
+        paddingX: 'l',
+        backgroundColor: 'shade1',
         borderRadius: '20px',
         boxShadow: '8px 8px 15px 5px rgba(0, 0, 0, 0.15)',
       })}
@@ -44,9 +44,9 @@ function Login() {
         className={css({
           width: '400px',
           height: '32px',
-          marginY: 'spacing.l',
-          color: 'colors.shade5',
-          fontSize: 'fontSizes.xxxl',
+          marginY: 'l',
+          color: 'shade5',
+          fontSize: 'xxxl',
           textAlign: 'center',
         })}
       >
@@ -68,14 +68,14 @@ function Login() {
             direction: 'row',
             justifyContent: 'space-between',
             width: '100%',
-            paddingX: 'spacing.s',
-            paddingY: 'spacing.m',
+            paddingX: 's',
+            paddingY: 'm',
           })}
         >
           <Button type="submit" disabled={!isSubmitted}>
             Sign up
           </Button>
-          <Button type="submit" disabled={!isSubmitted}>
+          <Button type="submit" disabled={!isSubmitted} background="secondary">
             Login
           </Button>
         </div>

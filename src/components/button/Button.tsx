@@ -4,22 +4,27 @@ import { RecipeVariantProps, cva } from 'styled-system/css';
 const button = cva({
   base: {
     display: 'flex',
-    paddingX: '128px',
-    paddingY: '40px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '128px',
+    height: '40px',
     border: 'none',
     borderRadius: '10px',
-    fontSize: 'fontSizes.m',
-    color: 'colors.shade1',
+    fontSize: 'md',
+    color: 'shade1',
   },
   variants: {
     background: {
       primary: {
-        backgroundColor: 'colors.shade4',
+        backgroundColor: 'shade4',
       },
       secondary: {
-        backgroundColor: 'colors.shade2',
+        backgroundColor: 'shade2',
       },
     },
+  },
+  defaultVariants: {
+    background: 'primary',
   },
 });
 
@@ -31,9 +36,9 @@ type ButtonProps = ButtonVariants & {
   type: 'button' | 'submit' | 'reset' | undefined;
 };
 
-export const Button = ({ children, disabled, type }: ButtonProps) => {
+export const Button = ({ children, disabled, type, background }: ButtonProps) => {
   return (
-    <button type={type} className={button()} disabled={disabled}>
+    <button type={type} className={button({ background })} disabled={disabled}>
       {children}
     </button>
   );
