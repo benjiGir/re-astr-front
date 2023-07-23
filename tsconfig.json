@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@theme/*": ["src/theme/*"],
       "@components/*": ["src/components/*"],
       "@router/*": ["src/router/*"],
       "@styles/*": ["src/styles/*"],
@@ -25,6 +26,6 @@
       "@utils/*": ["src/utils/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "styled-system"],
   "references": [{ "path": "./tsconfig.build.json" }]
 }
