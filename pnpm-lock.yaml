@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@carbon/icons-react':
+        specifier: ^11.64.0
+        version: 11.64.0(react@18.3.1)
       '@carbon/react':
         specifier: ^1.60.2
         version: 1.60.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.6)
@@ -177,11 +180,11 @@ packages:
   '@carbon/grid@11.24.1':
     resolution: {integrity: sha512-94hyPcyMiDBsRnFKMUL4/3t5XJ0r6T2BKOo0IcTFdsR+tka2Z7OGfB/3D+MePej9x7kh6I0I+tM6budtz3bbhQ==}
 
-  '@carbon/icon-helpers@10.49.1':
-    resolution: {integrity: sha512-62ngiDRZZUu0HvCpHgR3mb2N4f/+rbGPb7/uTMr6xHC4SRFI1F12a8UMjsGaQKzM3uegEmPkULyMqP3+USwiKA==}
+  '@carbon/icon-helpers@10.63.0':
+    resolution: {integrity: sha512-rK+ORn+he3pQsXIjPMqgR8z9645NaWvY3XQoNKr16ZPg1wTVbwg0leaqBu/bn0Lg1EgJqvcQVjVySjtO7lXgEg==}
 
-  '@carbon/icons-react@11.44.1':
-    resolution: {integrity: sha512-oZlwm9is3eGkxQbEuqsv0Awzb7s+msbdvM1/yxQJLcLCBWbRjER66nPLms9+vO2z3+3eS5CdLvoxplpRgOwA2Q==}
+  '@carbon/icons-react@11.64.0':
+    resolution: {integrity: sha512-ZWDACXeBpF8LwXUi1lad4FEBKo2C8+1/UOtoPsRLYueij/tXgDn1UoMpzaZxD/CTfo6wSNXldFoKZbzKxi7rAg==}
     peerDependencies:
       react: '>=16'
 
@@ -1828,13 +1831,13 @@ snapshots:
       '@carbon/layout': 11.23.1
       '@ibm/telemetry-js': 1.5.2
 
-  '@carbon/icon-helpers@10.49.1':
+  '@carbon/icon-helpers@10.63.0':
     dependencies:
       '@ibm/telemetry-js': 1.5.2
 
-  '@carbon/icons-react@11.44.1(react@18.3.1)':
+  '@carbon/icons-react@11.64.0(react@18.3.1)':
     dependencies:
-      '@carbon/icon-helpers': 10.49.1
+      '@carbon/icon-helpers': 10.63.0
       '@ibm/telemetry-js': 1.5.2
       prop-types: 15.8.1
       react: 18.3.1
@@ -1851,7 +1854,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.24.7
       '@carbon/feature-flags': 0.20.0
-      '@carbon/icons-react': 11.44.1(react@18.3.1)
+      '@carbon/icons-react': 11.64.0(react@18.3.1)
       '@carbon/layout': 11.23.1
       '@carbon/styles': 1.60.1(sass@1.77.6)
       '@figma/code-connect': 0.1.2

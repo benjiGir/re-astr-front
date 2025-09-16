@@ -1,7 +1,31 @@
-.loginContainer{
+
+.loginContainer {
+  background-color: #2c3e50;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  height: 100vh; 
+  height: 100vh;
 }
+
+.loginForm{
+  background-color: #e1e7ef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  height: auto;
+  padding: 2rem;
+  border-radius: 10px;
+
+  .buttonContainer{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+  }
+
+}
+
+
