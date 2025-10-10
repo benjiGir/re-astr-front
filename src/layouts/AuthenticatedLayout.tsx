@@ -1,8 +1,12 @@
-import {AppShell} from "@mantine/core";
-import {Link, Outlet} from "@tanstack/react-router";
+import {AppShell, NavLink, Stack} from "@mantine/core";
+import {Link, Outlet, useRouterState} from "@tanstack/react-router";
 import {TanStackRouterDevtools} from "@tanstack/react-router-devtools";
+import {IconCategory, IconDashboard, IconSearch, IconUpload} from "@tabler/icons-react";
 
 const AuthenticatedLayout = () => {
+    const routerState = useRouterState()
+    const currentPath = routerState.location.pathname
+
     return (
 
         <AppShell
@@ -17,10 +21,42 @@ const AuthenticatedLayout = () => {
 
 
             <AppShell.Navbar p="md">
-                <Link to="/dashboard">DashBoard</Link>
-                <Link to="/upload">Upload Archive</Link>
-                <Link to="/projects">Projets & Catégories </Link>
-                <Link to="/search">Recherche</Link>
+                <Stack gap="xs">
+                    <Link to="/dashboard" style={{textDecoration: 'none',color:'black'}}>
+                        <NavLink
+                            label="Dashboard"
+                            leftSection={<IconDashboard size={20}/>}
+                            active={currentPath === '/dashboard'}
+                        />
+                    </Link>
+                </Stack>
+                <Stack gap="xs">
+                    <Link to="/upload" style={{textDecoration: 'none',color:'black'}}>
+                        <NavLink
+                            label="Upload"
+                            leftSection={<IconUpload size={20}/>}
+                            active={currentPath === '/upload'}
+                        />
+                    </Link>
+                </Stack>
+                <Stack gap="xs">
+                    <Link to="/projects" style={{textDecoration: 'none',color:'black'}}>
+                        <NavLink
+                            label="Projets & Catégories"
+                            leftSection={<IconCategory size={20}/>}
+                            active={currentPath === '/projects'}
+                        />
+                    </Link>
+
+                </Stack>
+                <Stack gap="xs">
+                    <Link to="/search" style={{textDecoration: 'none',color:'black'}}> <NavLink
+                        label="Recherche"
+                        leftSection={<IconSearch size={20}/>}
+                        active={currentPath === '/search'}
+                    /> </Link>
+
+                </Stack>
 
                 {/*{user && (*/}
                 {/*    <Button mt="md" color="red" onClick={logout}>*/}
