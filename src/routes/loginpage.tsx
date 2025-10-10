@@ -1,11 +1,11 @@
 import {Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
 import {createFileRoute} from "@tanstack/react-router";
 
-export const Route = createFileRoute('/LoginPage')({
-    component: LoginPage,
+export const Route = createFileRoute('/loginpage')({
+    component: loginpage,
 })
 
-function LoginPage() {
+function loginpage() {
     return <Container fluid h="100vh" bg="#E6EEFF">
         <Flex
             h="100%"
