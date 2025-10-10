@@ -1,7 +1,7 @@
 import {AppShell, NavLink, Stack} from "@mantine/core";
 import {Link, Outlet, useRouterState} from "@tanstack/react-router";
 import {TanStackRouterDevtools} from "@tanstack/react-router-devtools";
-import {IconCategory, IconDashboard, IconSearch, IconUpload} from "@tabler/icons-react";
+import {IconBuildingStore, IconCategory, IconDashboard, IconSearch, IconUpload} from "@tabler/icons-react";
 
 const AuthenticatedLayout = () => {
     const routerState = useRouterState()
@@ -15,14 +15,19 @@ const AuthenticatedLayout = () => {
             navbar={{width: 200, breakpoint: 'sm', collapsed: {mobile: false}}}
         >
 
-            <AppShell.Header p="md">
-                ASTR
+            <AppShell.Header p="md" fw={500} style={{
+                display: 'flex',
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: '0.5rem'
+            }}>
+                <IconBuildingStore/> Archive Manager
             </AppShell.Header>
 
 
             <AppShell.Navbar p="md">
                 <Stack gap="xs">
-                    <Link to="/dashboard" style={{textDecoration: 'none',color:'black'}}>
+                    <Link to="/dashboard" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
                             label="Dashboard"
                             leftSection={<IconDashboard size={20}/>}
@@ -31,7 +36,7 @@ const AuthenticatedLayout = () => {
                     </Link>
                 </Stack>
                 <Stack gap="xs">
-                    <Link to="/upload" style={{textDecoration: 'none',color:'black'}}>
+                    <Link to="/upload" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
                             label="Upload"
                             leftSection={<IconUpload size={20}/>}
@@ -40,7 +45,7 @@ const AuthenticatedLayout = () => {
                     </Link>
                 </Stack>
                 <Stack gap="xs">
-                    <Link to="/projects" style={{textDecoration: 'none',color:'black'}}>
+                    <Link to="/projects" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
                             label="Projets & Catégories"
                             leftSection={<IconCategory size={20}/>}
@@ -50,11 +55,13 @@ const AuthenticatedLayout = () => {
 
                 </Stack>
                 <Stack gap="xs">
-                    <Link to="/search" style={{textDecoration: 'none',color:'black'}}> <NavLink
-                        label="Recherche"
-                        leftSection={<IconSearch size={20}/>}
-                        active={currentPath === '/search'}
-                    /> </Link>
+                    <Link to="/search" style={{textDecoration: 'none', color: 'black'}}>
+                        <NavLink
+                            label="Recherche"
+                            leftSection={<IconSearch size={20}/>}
+                            active={currentPath === '/search'}
+                        />
+                    </Link>
 
                 </Stack>
 
