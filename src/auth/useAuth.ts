@@ -1,6 +1,6 @@
 
 import {SignInParams, SignUpParams} from "../types/authTypes.ts";
-import {AuthService} from "../api/auth.service.ts";
+import {AuthService} from "./auth.service.ts";
 
 export const useAuth = () => {
 

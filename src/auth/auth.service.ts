@@ -1,5 +1,5 @@
 import {SignInParams, SignOutOptions, SignUpParams} from "../types/authTypes.ts";
-import {authClient} from "../auth/auth-client.ts";
+import {authClient} from "./auth-client.ts";
 
 export class AuthService {
     static async signUp(params: SignUpParams) {

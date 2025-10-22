@@ -1,16 +1,25 @@
 import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
 import {useForm} from '@mantine/form'
-import {createFileRoute} from "@tanstack/react-router";
+import {createFileRoute, redirect} from "@tanstack/react-router";
 import {useAuth} from "../auth/useAuth.ts";
 import {useState} from "react";
 import {IconAlertCircle} from "@tabler/icons-react";
+import {authClient} from "../auth/auth-client.ts";
 
 
-export const Route = createFileRoute('/loginpage')({
-    component: Loginpage,
+export const Route = createFileRoute('/signin')({
+    beforeLoad: async () => {
+        const session = await authClient.getSession()
+        if (session.data?.session) {
+            throw redirect({
+                to: '/dashboard',
+            })
+        }
+    },
+    component: Signin,
 })
 
-function Loginpage() {
+function Signin() {
     const {signIn} = useAuth()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
