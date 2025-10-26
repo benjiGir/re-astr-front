@@ -27,42 +27,41 @@ const AuthenticatedLayout = () => {
 
             <AppShell.Navbar p="md">
                 <Stack gap="xs">
-                    <Link to="/dashboard" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
+                            component={Link}
                             label="Dashboard"
+                            to="/dashboard"
                             leftSection={<IconDashboard size={20}/>}
                             active={currentPath === '/dashboard'}
                         />
-                    </Link>
+
                 </Stack>
                 <Stack gap="xs">
-                    <Link to="/upload" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
+                            component={Link}
                             label="Upload"
+                            to="/upload"
                             leftSection={<IconUpload size={20}/>}
                             active={currentPath === '/upload'}
                         />
-                    </Link>
                 </Stack>
                 <Stack gap="xs">
-                    <Link to="/projects" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
+                            component={Link}
                             label="Projets & Catégories"
+                            to="/projects"
                             leftSection={<IconCategory size={20}/>}
                             active={currentPath === '/projects'}
                         />
-                    </Link>
-
                 </Stack>
                 <Stack gap="xs">
-                    <Link to="/search" style={{textDecoration: 'none', color: 'black'}}>
                         <NavLink
+                            component={Link}
                             label="Recherche"
+                            to="/search"
                             leftSection={<IconSearch size={20}/>}
                             active={currentPath === '/search'}
                         />
-                    </Link>
-
                 </Stack>
 
                 {/*{user && (*/}
