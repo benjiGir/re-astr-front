@@ -1,14 +1,18 @@
-import {AppShell, NavLink, Stack} from "@mantine/core";
+import {AppShell, Button, NavLink, Stack} from "@mantine/core";
 import {Link, Outlet, useRouterState} from "@tanstack/react-router";
 import {TanStackRouterDevtools} from "@tanstack/react-router-devtools";
 import {IconBuildingStore, IconCategory, IconDashboard, IconSearch, IconUpload} from "@tabler/icons-react";
+import {useAuth} from "../auth/useAuth.ts";
+import {Route} from "../routes/_authenticated.tsx";
 
 const AuthenticatedLayout = () => {
     const routerState = useRouterState()
     const currentPath = routerState.location.pathname
+    const {signOut} = useAuth();
+    const { user } = Route.useRouteContext();
+
 
     return (
-
         <AppShell
             padding="md"
             header={{height: 60}}
@@ -27,48 +31,48 @@ const AuthenticatedLayout = () => {
 
             <AppShell.Navbar p="md">
                 <Stack gap="xs">
-                        <NavLink
-                            component={Link}
-                            label="Dashboard"
-                            to="/dashboard"
-                            leftSection={<IconDashboard size={20}/>}
-                            active={currentPath === '/dashboard'}
-                        />
+                    <NavLink
+                        component={Link}
+                        label="Dashboard"
+                        to="/dashboard"
+                        leftSection={<IconDashboard size={20}/>}
+                        active={currentPath === '/dashboard'}
+                    />
 
                 </Stack>
                 <Stack gap="xs">
-                        <NavLink
-                            component={Link}
-                            label="Upload"
-                            to="/upload"
-                            leftSection={<IconUpload size={20}/>}
-                            active={currentPath === '/upload'}
-                        />
+                    <NavLink
+                        component={Link}
+                        label="Upload"
+                        to="/upload"
+                        leftSection={<IconUpload size={20}/>}
+                        active={currentPath === '/upload'}
+                    />
                 </Stack>
                 <Stack gap="xs">
-                        <NavLink
-                            component={Link}
-                            label="Projets & Catégories"
-                            to="/projects"
-                            leftSection={<IconCategory size={20}/>}
-                            active={currentPath === '/projects'}
-                        />
+                    <NavLink
+                        component={Link}
+                        label="Projets & Catégories"
+                        to="/projects"
+                        leftSection={<IconCategory size={20}/>}
+                        active={currentPath === '/projects'}
+                    />
                 </Stack>
                 <Stack gap="xs">
-                        <NavLink
-                            component={Link}
-                            label="Recherche"
-                            to="/search"
-                            leftSection={<IconSearch size={20}/>}
-                            active={currentPath === '/search'}
-                        />
+                    <NavLink
+                        component={Link}
+                        label="Recherche"
+                        to="/search"
+                        leftSection={<IconSearch size={20}/>}
+                        active={currentPath === '/search'}
+                    />
                 </Stack>
 
-                {/*{user && (*/}
-                {/*    <Button mt="md" color="red" onClick={logout}>*/}
-                {/*        Déconnexion*/}
-                {/*    </Button>*/}
-                {/*)}*/}
+                {user && (
+                    <Button mt="md" color="red" onClick={()=>signOut("/")}>
+                        Déconnexion
+                    </Button>
+                )}
             </AppShell.Navbar>
 
 

@@ -16,5 +16,10 @@ export const useAuth = () => {
         return await AuthService.signOut({callbackURL})
     }
 
-    return {signIn, signUp, signOut}
+    const getSession = async () => {
+        return await AuthService.getSession()
+    }
+
+
+    return {signIn, signUp, signOut,getSession}
 }
