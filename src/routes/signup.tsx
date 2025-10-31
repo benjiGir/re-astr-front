@@ -1,9 +1,9 @@
 import {createFileRoute} from '@tanstack/react-router'
 import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
 import {IconAlertCircle} from "@tabler/icons-react";
-import {useAuth} from "../auth/useAuth.ts";
 import {useState} from "react";
 import {useForm} from "@mantine/form";
+import AuthService from "../auth/auth.service.ts";
 
 export const Route = createFileRoute('/signup')({
     component: RouteComponent,
@@ -11,7 +11,6 @@ export const Route = createFileRoute('/signup')({
 
 function RouteComponent() {
 
-    const {signUp} = useAuth()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -39,7 +38,7 @@ function RouteComponent() {
         setError('')
 
         try {
-            await signUp({
+            await AuthService.signUp({
                 email: values.email,
                 password: values.password,
                 name: values.name,

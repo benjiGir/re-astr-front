@@ -2,15 +2,13 @@ import {AppShell, Button, NavLink, Stack} from "@mantine/core";
 import {Link, Outlet, useRouterState} from "@tanstack/react-router";
 import {TanStackRouterDevtools} from "@tanstack/react-router-devtools";
 import {IconBuildingStore, IconCategory, IconDashboard, IconSearch, IconUpload} from "@tabler/icons-react";
-import {useAuth} from "../auth/useAuth.ts";
-import {Route} from "../routes/_authenticated.tsx";
+import useUserStore from "../stores/userStore.tsx";
+import AuthService from "../auth/auth.service.ts";
 
 const AuthenticatedLayout = () => {
     const routerState = useRouterState()
     const currentPath = routerState.location.pathname
-    const {signOut} = useAuth();
-    const { user } = Route.useRouteContext();
-
+    const {logout} = useUserStore()
 
     return (
         <AppShell
@@ -68,11 +66,12 @@ const AuthenticatedLayout = () => {
                     />
                 </Stack>
 
-                {user && (
-                    <Button mt="md" color="red" onClick={()=>signOut("/")}>
-                        Déconnexion
-                    </Button>
-                )}
+                <Button mt="md" color="red" onClick={() => {
+                    AuthService.signOut().then(() => logout())
+                }}>
+                    Déconnexion
+                </Button>
+
             </AppShell.Navbar>
 
 

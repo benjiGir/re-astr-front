@@ -1,15 +1,15 @@
 import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
 import {useForm} from '@mantine/form'
 import {createFileRoute, redirect} from "@tanstack/react-router";
-import {useAuth} from "../auth/useAuth.ts";
 import {useState} from "react";
 import {IconAlertCircle} from "@tabler/icons-react";
-import {authClient} from "../auth/auth-client.ts";
+import AuthService from "../auth/auth.service.ts";
+import useUserStore from "../stores/userStore.tsx";
 
 
 export const Route = createFileRoute('/')({
     beforeLoad: async () => {
-        const session = await authClient.getSession();
+        const session = await AuthService.getSession();
         if (session) {
             throw redirect({
                 to: '/dashboard',
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/')({
 })
 
 function Signin() {
-    const {signIn} = useAuth()
+    const {setUser} = useUserStore()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -40,14 +40,17 @@ function Signin() {
         setError('')
 
         try {
-            await signIn({
+            await AuthService.signIn({
                 email: values.email,
                 password: values.password,
                 callbackURL: '/dashboard',
+            }).then((res) => {
+                return setUser(res?.data?.user);
             })
         } catch (err) {
             setError(err instanceof Error ? err.message : 'error signIn')
         } finally {
+
             setLoading(false)
         }
     }

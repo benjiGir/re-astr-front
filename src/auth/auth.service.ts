@@ -1,7 +1,8 @@
 import {SignInParams, SignOutOptions, SignUpParams} from "../types/authTypes.ts";
 import {authClient} from "./auth-client.ts";
 
-export class AuthService {
+
+class AuthService {
     static async signUp(params: SignUpParams) {
         try {
             return await authClient.signUp.email(
@@ -28,6 +29,7 @@ export class AuthService {
     }
 
     static async signIn(params: SignInParams) {
+
         try {
             return await authClient.signIn.email({
                 email: params.email,
@@ -86,4 +88,6 @@ export class AuthService {
     }
 
 }
+
+export default AuthService
 
