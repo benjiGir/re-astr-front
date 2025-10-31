@@ -1,12 +1,9 @@
-import Router from "./Router/Router";
-import './scss/styles.scss'
+
+
 
 function App() {
-  return (
-    <>
-      <Router />
-    </>
-  );
+
+    return ;
 }
 
 export default App;
