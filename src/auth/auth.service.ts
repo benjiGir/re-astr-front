@@ -58,7 +58,7 @@ class AuthService {
                         if (options?.callbackURL) {
                             window.location.href = options.callbackURL
                         } else {
-                            window.location.href = "/loginpage"
+                            window.location.href = "/login"
                         }
                     },
                     onError: (ctx) => {

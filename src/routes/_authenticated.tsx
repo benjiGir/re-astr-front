@@ -6,9 +6,9 @@ import AuthService from "../auth/auth.service.ts";
 export const Route = createFileRoute('/_authenticated')({
     beforeLoad: async ({location}) => {
             const session = await AuthService.getSession();
-            if (!session) {
+        if (!session || !session.data) {
                 throw redirect({
-                    to: '/',
+                    to: '/login',
                     search: {
                         redirect: location.href,
                     },
@@ -19,4 +19,5 @@ export const Route = createFileRoute('/_authenticated')({
     },
     component: authenticatedLayout,
 })
+
 
