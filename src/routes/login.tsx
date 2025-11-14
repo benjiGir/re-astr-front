@@ -3,8 +3,8 @@ import {useForm} from '@mantine/form'
 import {createFileRoute} from "@tanstack/react-router";
 import {useState} from "react";
 import {IconAlertCircle} from "@tabler/icons-react";
-import AuthService from "../auth/auth.service.ts";
 import useUserStore from "../stores/userStore.tsx";
+import {signIn} from "../auth/auth.service.ts";
 
 
 export const Route = createFileRoute('/login')({
@@ -30,19 +30,16 @@ function Signin() {
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true)
         setError('')
-
         try {
-            await AuthService.signIn({
+            const res = await signIn({
                 email: values.email,
                 password: values.password,
                 callbackURL: '/dashboard',
-            }).then((res) => {
-                return setUser(res?.data?.user);
-            })
+            });
+            setUser(res?.data?.user ?? null);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'error signIn')
         } finally {
-
             setLoading(false)
         }
     }

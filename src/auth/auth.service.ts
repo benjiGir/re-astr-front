@@ -2,10 +2,10 @@ import {SignInParams, SignOutOptions, SignUpParams} from "../types/authTypes.ts"
 import {authClient} from "./auth-client.ts";
 
 
-class AuthService {
-    static async signUp(params: SignUpParams) {
+
+export const signUp= async(params: SignUpParams)=> {
         try {
-            return await authClient.signUp.email(
+            return authClient.signUp.email(
                 {
                     email: params.email,
                     password: params.password,
@@ -22,16 +22,17 @@ class AuthService {
                     }
                 }
             )
+
         } catch (error) {
             console.error("error sign up:", error)
             throw error
         }
     }
 
-    static async signIn(params: SignInParams) {
+export const signIn= async(params: SignInParams)=> {
 
         try {
-            return await authClient.signIn.email({
+            return authClient.signIn.email({
                 email: params.email,
                 password: params.password,
             }, {
@@ -39,20 +40,22 @@ class AuthService {
                     if (params.callbackURL) {
                         window.location.href = params.callbackURL
                     }
+
                 },
                 onError: (ctx) => {
                     throw new Error(ctx.error.message || "Error during signIn")
                 }
             })
+
         } catch (err) {
             console.error("Error sign in ", err);
             throw err;
         }
     }
 
-    static async signOut(options?: SignOutOptions) {
+export const signOut = async(options?: SignOutOptions)=> {
         try {
-            await authClient.signOut({
+            return  authClient.signOut({
                 fetchOptions: {
                     onSuccess: () => {
                         if (options?.callbackURL) {
@@ -66,15 +69,18 @@ class AuthService {
                     }
                 }
             })
+
         } catch (error) {
             console.error("error sign out:", error)
             throw error
         }
     }
 
-    static async getSession() {
+export const  getSession= async ()=> {
         try {
-            return await authClient.getSession()
+           return  authClient.getSession()
+
+
         } catch (error) {
             console.error("error get session:", error)
             return null
@@ -82,12 +88,12 @@ class AuthService {
     }
 
 
-    static async isAuthenticated(): Promise<boolean> {
-        const session = await this.getSession()
+export const  isAuthenticated= async(): Promise<boolean> =>{
+        const session = await getSession()
         return !!session?.data?.session
     }
 
-}
 
-export default AuthService
+
+
 
