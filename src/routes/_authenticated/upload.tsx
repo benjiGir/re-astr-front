@@ -1,9 +1,321 @@
-import { createFileRoute } from '@tanstack/react-router'
+import {
+  Button,
+  Card,
+  Group,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Textarea,
+  Title,
+} from '@mantine/core'
+import { useForm } from '@mantine/form'
+import type { FileWithPath } from '@mantine/dropzone'
+import { IconPlus } from '@tabler/icons-react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { useCategories } from '../../api/queries'
+import { FileUploadZone } from '../../components/Upload/FileUploadZone'
 
 export const Route = createFileRoute('/_authenticated/upload')({
-  component: RouteComponent,
+  component: UploadPage,
 })
 
-function RouteComponent() {
-  return <div>Hello "/upload"!</div>
+interface UploadFormValues {
+  name: string
+  version: string
+  project: string
+  category: string
+  testType: string
+  priority: string
+  author: string
+  environment: string
+  description: string
+  prerequisites: string
+  expectedResults: string
+}
+
+function UploadPage() {
+  const navigate = useNavigate()
+  const { data: categories, isLoading: loadingCategories } = useCategories()
+  const [files, setFiles] = useState<FileWithPath[]>([])
+  const [tagInput, setTagInput] = useState('')
+  const [tags, setTags] = useState<string[]>([])
+
+  const form = useForm<UploadFormValues>({
+    initialValues: {
+      name: '',
+      version: '',
+      project: '',
+      category: '',
+      testType: '',
+      priority: '',
+      author: '',
+      environment: '',
+      description: '',
+      prerequisites: '',
+      expectedResults: '',
+    },
+    validate: {
+      name: (value) => (value.trim().length === 0 ? 'Le nom est requis' : null),
+      project: (value) => (value.trim().length === 0 ? 'Le projet est requis' : null),
+      category: (value) => (value.trim().length === 0 ? 'La catégorie est requise' : null),
+    },
+  })
+
+  const handleFileDrop = (droppedFiles: FileWithPath[]) => {
+    setFiles((prev) => [...prev, ...droppedFiles])
+  }
+
+  const addTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()])
+      setTagInput('')
+    }
+  }
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove))
+  }
+
+  const handleSubmit = (values: UploadFormValues) => {
+    console.log('Form values:', values)
+    console.log('Files:', files)
+    console.log('Tags:', tags)
+    // TODO: Implement mutation to create test
+  }
+
+  // Get unique projects from categories (mock for now)
+  const projects = [
+    { value: 'electromagnetic', label: 'Électromagnétisme' },
+    { value: 'vibration', label: 'Vibrations' },
+    { value: 'environmental', label: 'Environnement' },
+  ]
+
+  const testTypes = [
+    { value: 'integration', label: "Tests d'Intégration" },
+    { value: 'e2e', label: 'Tests End-to-End' },
+    { value: 'performance', label: 'Tests de Performance' },
+    { value: 'security', label: 'Tests de Sécurité' },
+    { value: 'unit', label: 'Tests Unitaires' },
+  ]
+
+  const priorities = [
+    { value: 'low', label: 'Basse' },
+    { value: 'medium', label: 'Moyenne' },
+    { value: 'high', label: 'Haute' },
+    { value: 'critical', label: 'Critique' },
+  ]
+
+  return (
+    <Stack gap="xl" style={{ maxWidth: '896px', margin: '0 auto' }}>
+      {/* Header */}
+      <Stack gap={4}>
+        <Title order={1}>Créer une Archive de Tests</Title>
+        <Text c="#717182" size="md">
+          Uploadez vos documents de tests et créez une fiche d'archive complète
+        </Text>
+      </Stack>
+
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Stack gap="lg">
+          {/* Section 1: Fichiers de Tests */}
+          <Card withBorder padding="lg" radius="md">
+            <Stack gap="md">
+              <Stack gap={4}>
+                <Text size="md" fw={500} c="#0a0a0a">
+                  Fichiers de Tests
+                </Text>
+                <Text size="md" c="#717182">
+                  Uploadez vos documents, scripts de tests et autres fichiers associés
+                </Text>
+              </Stack>
+
+              <FileUploadZone onDrop={handleFileDrop} />
+
+              {files.length > 0 && (
+                <Stack gap="xs">
+                  {files.map((file, index) => (
+                    <Group key={index} justify="space-between" p="xs" style={{ backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                      <Text size="sm">{file.name}</Text>
+                      <Text size="xs" c="#717182">
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                      </Text>
+                    </Group>
+                  ))}
+                </Stack>
+              )}
+            </Stack>
+          </Card>
+
+          {/* Section 2: Informations de Base */}
+          <Card withBorder padding="lg" radius="md">
+            <Stack gap="md">
+              <Text size="md" fw={500} c="#0a0a0a">
+                Informations de Base
+              </Text>
+
+              <Group grow>
+                <TextInput
+                  label="Nom de l'Archive"
+                  placeholder="Ex: Tests API v2.1"
+                  required
+                  {...form.getInputProps('name')}
+                />
+                <TextInput
+                  label="Version"
+                  placeholder="Ex: 2.1.0"
+                  {...form.getInputProps('version')}
+                />
+              </Group>
+
+              <Group grow>
+                <Select
+                  label="Projet"
+                  placeholder="Sélectionner un projet"
+                  data={projects}
+                  required
+                  {...form.getInputProps('project')}
+                />
+                <Select
+                  label="Catégorie"
+                  placeholder="Sélectionner une catégorie"
+                  data={categories?.map((c) => ({ value: c.id, label: c.name })) || []}
+                  required
+                  disabled={loadingCategories}
+                  {...form.getInputProps('category')}
+                />
+              </Group>
+
+              <Group grow>
+                <Select
+                  label="Type de Test"
+                  placeholder="Sélectionner le type"
+                  data={testTypes}
+                  {...form.getInputProps('testType')}
+                />
+                <Select
+                  label="Priorité"
+                  placeholder="Sélectionner la priorité"
+                  data={priorities}
+                  {...form.getInputProps('priority')}
+                />
+              </Group>
+
+              <Group grow>
+                <TextInput
+                  label="Auteur"
+                  placeholder="Nom de l'auteur"
+                  {...form.getInputProps('author')}
+                />
+                <TextInput
+                  label="Environnement"
+                  placeholder="Ex: Production, Staging"
+                  {...form.getInputProps('environment')}
+                />
+              </Group>
+            </Stack>
+          </Card>
+
+          {/* Section 3: Description et Détails */}
+          <Card withBorder padding="lg" radius="md">
+            <Stack gap="md">
+              <Text size="md" fw={500} c="#0a0a0a">
+                Description et Détails
+              </Text>
+
+              <Textarea
+                label="Description"
+                placeholder="Décrivez l'objectif et le contenu de cette archive"
+                minRows={3}
+                {...form.getInputProps('description')}
+              />
+
+              <Textarea
+                label="Prérequis"
+                placeholder="Listez les prérequis nécessaires"
+                minRows={3}
+                {...form.getInputProps('prerequisites')}
+              />
+
+              <Textarea
+                label="Résultats Attendus"
+                placeholder="Décrivez les résultats attendus"
+                minRows={3}
+                {...form.getInputProps('expectedResults')}
+              />
+            </Stack>
+          </Card>
+
+          {/* Section 4: Tags */}
+          <Card withBorder padding="lg" radius="md">
+            <Stack gap="md">
+              <Stack gap={4}>
+                <Text size="md" fw={500} c="#0a0a0a">
+                  Tags
+                </Text>
+                <Text size="md" c="#717182">
+                  Ajoutez des tags pour faciliter la recherche et l'organisation
+                </Text>
+              </Stack>
+
+              <Group>
+                <TextInput
+                  placeholder="Ajouter un tag"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addTag()
+                    }
+                  }}
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  onClick={addTag}
+                  size="sm"
+                  style={{ backgroundColor: '#030213' }}
+                >
+                  <IconPlus size={16} />
+                </Button>
+              </Group>
+
+              {tags.length > 0 && (
+                <Group gap="xs">
+                  {tags.map((tag) => (
+                    <Button
+                      key={tag}
+                      variant="light"
+                      size="xs"
+                      onClick={() => removeTag(tag)}
+                    >
+                      {tag} ×
+                    </Button>
+                  ))}
+                </Group>
+              )}
+            </Stack>
+          </Card>
+
+          {/* Actions */}
+          <Group justify="flex-end">
+            <Button
+              variant="outline"
+              color="gray"
+              onClick={() => navigate({ to: '/dashboard' })}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              style={{ backgroundColor: '#030213' }}
+            >
+              Créer l'Archive
+            </Button>
+          </Group>
+        </Stack>
+      </form>
+    </Stack>
+  )
 }
