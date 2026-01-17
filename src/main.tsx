@@ -1,4 +1,4 @@
-import {StrictMode} from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import '@mantine/core/styles.css';
 import {routeTree} from "./routeTree.gen"
@@ -8,13 +8,24 @@ import {QueryClientProvider} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {queryClient} from "./services/queryClient.ts";
 
+const router = createRouter({ routeTree })
 
-const router = createRouter({routeTree});
+// Configure QueryClient with sensible defaults
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 declare module '@tanstack/react-router' {
-    interface Register {
-        router: typeof router;
-    }
+  interface Register {
+    router: typeof router
+  }
 }
 
 
