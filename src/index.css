@@ -135,5 +135,5 @@ table {
 }
 
 #root {
-  --cds-label-01-font-size: 1rem
+  --cds-label-01-font-size: 1rem;
 }
