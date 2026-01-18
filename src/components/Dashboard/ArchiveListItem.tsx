@@ -1,7 +1,7 @@
 import { Badge, Box, Group, Stack, Text, ThemeIcon } from '@mantine/core'
 import { IconFile, IconFolder } from '@tabler/icons-react'
-
-type ArchiveStatus = 'active' | 'in_progress' | 'completed'
+import { useTranslation } from 'react-i18next'
+import type { TestStatus } from '../../types/api'
 
 interface ArchiveListItemProps {
   title: string
@@ -9,27 +9,29 @@ interface ArchiveListItemProps {
   testType: string
   date: string
   size: string
-  status: ArchiveStatus
+  status: TestStatus
 }
 
-const statusConfig = {
-  active: {
-    label: 'Active',
-    bg: '#030213',
-    color: 'white',
-    variant: 'filled' as const,
-  },
-  in_progress: {
-    label: 'En cours',
+const statusConfig: Record<TestStatus, { bg: string; color: string; variant: 'filled' | 'outline' }> = {
+  draft: {
     bg: '#eceef2',
     color: '#030213',
-    variant: 'filled' as const,
+    variant: 'filled',
+  },
+  in_progress: {
+    bg: '#030213',
+    color: 'white',
+    variant: 'filled',
   },
   completed: {
-    label: 'Terminé',
     bg: 'transparent',
     color: '#0a0a0a',
-    variant: 'outline' as const,
+    variant: 'outline',
+  },
+  failed: {
+    bg: '#ff6b6b',
+    color: 'white',
+    variant: 'filled',
   },
 }
 
@@ -41,6 +43,7 @@ export function ArchiveListItem({
   size,
   status,
 }: ArchiveListItemProps) {
+  const { t } = useTranslation()
   const statusStyle = statusConfig[status]
 
   return (
@@ -99,7 +102,7 @@ export function ArchiveListItem({
           borderColor: status === 'completed' ? 'rgba(0, 0, 0, 0.1)' : undefined,
         }}
       >
-        {statusStyle.label}
+        {t(`status.${status}`)}
       </Badge>
     </Box>
   )
