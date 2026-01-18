@@ -1,0 +1,32 @@
+{
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "invalidEmail": "Email invalide",
+    "invalidUrl": "URL invalide",
+    "minLength": "Minimum {{count}} caractères",
+    "maxLength": "Maximum {{count}} caractères",
+    "minValue": "Valeur minimum: {{value}}",
+    "maxValue": "Valeur maximum: {{value}}"
+  },
+  "errors": {
+    "network": "Erreur réseau",
+    "unauthorized": "Non autorisé",
+    "forbidden": "Accès refusé",
+    "notFound": "Ressource non trouvée",
+    "serverError": "Erreur serveur",
+    "unknown": "Une erreur est survenue"
+  },
+  "loading": "Chargement...",
+  "noData": "Aucune donnée"
+}
