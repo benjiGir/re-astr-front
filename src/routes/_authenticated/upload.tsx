@@ -3,6 +3,7 @@ import {
   Card,
   Group,
   Select,
+  SimpleGrid,
   Stack,
   Text,
   TextInput,
@@ -13,9 +14,10 @@ import { useForm } from '@mantine/form'
 import type { FileWithPath } from '@mantine/dropzone'
 import { IconPlus } from '@tabler/icons-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { useCategories } from '../../api/queries'
+import { useEffect, useState } from 'react'
+import { useCategories, useCategory } from '../../api/queries'
 import { FileUploadZone } from '../../components/Upload/FileUploadZone'
+import { DynamicField } from '../../components/Upload/DynamicField'
 
 export const Route = createFileRoute('/_authenticated/upload')({
   component: UploadPage,
@@ -41,6 +43,11 @@ function UploadPage() {
   const [files, setFiles] = useState<FileWithPath[]>([])
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('')
+  const [commonData, setCommonData] = useState<Record<string, any>>({})
+
+  // Fetch selected category details
+  const { data: selectedCategory, isLoading: loadingCategory } = useCategory(selectedCategoryId)
 
   const form = useForm<UploadFormValues>({
     initialValues: {
@@ -63,6 +70,27 @@ function UploadPage() {
     },
   })
 
+  // Update selected category when form value changes
+  useEffect(() => {
+    if (form.values.category && form.values.category !== selectedCategoryId) {
+      setSelectedCategoryId(form.values.category)
+      setCommonData({}) // Reset commonData when category changes
+    }
+  }, [form.values.category, selectedCategoryId])
+
+  // Initialize commonData with default values when category is loaded
+  useEffect(() => {
+    if (selectedCategory?.baseSchema?.fields) {
+      const initialData: Record<string, any> = {}
+      for (const field of selectedCategory.baseSchema.fields) {
+        if (field.defaultValue !== undefined) {
+          initialData[field.key] = field.defaultValue
+        }
+      }
+      setCommonData(initialData)
+    }
+  }, [selectedCategory])
+
   const handleFileDrop = (droppedFiles: FileWithPath[]) => {
     setFiles((prev) => [...prev, ...droppedFiles])
   }
@@ -82,7 +110,29 @@ function UploadPage() {
     console.log('Form values:', values)
     console.log('Files:', files)
     console.log('Tags:', tags)
+    console.log('Common Data (from baseSchema):', commonData)
+
     // TODO: Implement mutation to create test
+    // const testData: CreateTestDto = {
+    //   categoryId: values.category,
+    //   name: values.name,
+    //   description: values.description,
+    //   status: 'draft',
+    //   commonData: commonData,
+    //   customData: {},
+    //   metadata: {
+    //     version: values.version,
+    //     project: values.project,
+    //     testType: values.testType,
+    //     priority: values.priority,
+    //     author: values.author,
+    //     environment: values.environment,
+    //     prerequisites: values.prerequisites,
+    //     expectedResults: values.expectedResults,
+    //     tags: tags,
+    //     files: files.map(f => f.name),
+    //   }
+    // }
   }
 
   // Get unique projects from categories (mock for now)
@@ -247,7 +297,39 @@ function UploadPage() {
             </Stack>
           </Card>
 
-          {/* Section 4: Tags */}
+          {/* Section 4: Champs Spécifiques à la Catégorie */}
+          {selectedCategory?.baseSchema?.fields && selectedCategory.baseSchema.fields.length > 0 && (
+            <Card withBorder padding="lg" radius="md">
+              <Stack gap="md">
+                <Stack gap={4}>
+                  <Text size="md" fw={500} c="#0a0a0a">
+                    Champs Spécifiques
+                  </Text>
+                  <Text size="md" c="#717182">
+                    Champs requis pour la catégorie "{selectedCategory.name}"
+                  </Text>
+                </Stack>
+
+                <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                  {selectedCategory.baseSchema.fields.map((field) => (
+                    <DynamicField
+                      key={field.key}
+                      field={field}
+                      value={commonData[field.key]}
+                      onChange={(value) => {
+                        setCommonData((prev) => ({
+                          ...prev,
+                          [field.key]: value,
+                        }))
+                      }}
+                    />
+                  ))}
+                </SimpleGrid>
+              </Stack>
+            </Card>
+          )}
+
+          {/* Section 5: Tags */}
           <Card withBorder padding="lg" radius="md">
             <Stack gap="md">
               <Stack gap={4}>

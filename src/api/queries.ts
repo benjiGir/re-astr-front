@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import type { Category, Test } from '../types/api'
 import * as api from './api.service'
 
 // ============================================
