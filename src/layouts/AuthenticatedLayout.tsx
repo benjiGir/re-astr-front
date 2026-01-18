@@ -10,11 +10,13 @@ import {
 } from '@tabler/icons-react'
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { useTranslation } from 'react-i18next'
 import useUserStore from '../stores/userStore.tsx'
 import {useSignOut} from "../auth/hooks.ts";
 
 
 const AuthenticatedLayout = () => {
+  const { t } = useTranslation()
     const routerState = useRouterState()
     const currentPath = routerState.location.pathname
     const {mutate: signOut, isPending} = useSignOut()
@@ -41,7 +43,7 @@ const AuthenticatedLayout = () => {
           <Group gap={8}>
             <IconArchive size={24} />
             <Text fw={600} size="md">
-              Système de Gestion d'Archives
+              {t('app.name')}
             </Text>
           </Group>
         </Group>
@@ -53,7 +55,7 @@ const AuthenticatedLayout = () => {
           <Group gap={8}>
             <IconArchive size={24} />
             <Text fw={600} size="md">
-              Archive Manager
+              {t('nav.archiveManager')}
             </Text>
           </Group>
         </AppShell.Section>
@@ -62,7 +64,7 @@ const AuthenticatedLayout = () => {
         <AppShell.Section grow component={ScrollArea} px="xs">
           <NavLink
             component={Link}
-            label="Dashboard"
+            label={t('nav.dashboard')}
             to="/dashboard"
             leftSection={<IconDashboard size={16} />}
             active={currentPath === '/dashboard'}
@@ -82,7 +84,7 @@ const AuthenticatedLayout = () => {
           />
           <NavLink
             component={Link}
-            label="Upload Archive"
+            label={t('nav.uploadArchive')}
             to="/upload"
             leftSection={<IconUpload size={16} />}
             active={currentPath === '/upload'}
@@ -102,7 +104,7 @@ const AuthenticatedLayout = () => {
           />
           <NavLink
             component={Link}
-            label="Projets & Catégories"
+            label={t('nav.projectsCategories')}
             to="/projects"
             leftSection={<IconCategory size={16} />}
             active={currentPath === '/projects'}
@@ -122,7 +124,7 @@ const AuthenticatedLayout = () => {
           />
           <NavLink
             component={Link}
-            label="Recherche"
+            label={t('nav.search')}
             to="/search"
             leftSection={<IconSearch size={16} />}
             active={currentPath === '/search'}
@@ -168,7 +170,7 @@ const AuthenticatedLayout = () => {
             }}
           >
             <IconLogout size={16} />
-            <span>Déconnexion</span>
+            <span>{t('nav.logout')}</span>
           </UnstyledButton>
         </AppShell.Section>
       </AppShell.Navbar>

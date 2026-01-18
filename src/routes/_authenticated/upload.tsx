@@ -15,6 +15,7 @@ import type { FileWithPath } from '@mantine/dropzone'
 import { IconPlus } from '@tabler/icons-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCategories, useCategory } from '../../api/queries'
 import { FileUploadZone } from '../../components/Upload/FileUploadZone'
 import { DynamicField } from '../../components/Upload/DynamicField'
@@ -38,6 +39,7 @@ interface UploadFormValues {
 }
 
 function UploadPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: categories, isLoading: loadingCategories } = useCategories()
   const [files, setFiles] = useState<FileWithPath[]>([])
@@ -64,9 +66,9 @@ function UploadPage() {
       expectedResults: '',
     },
     validate: {
-      name: (value) => (value.trim().length === 0 ? 'Le nom est requis' : null),
-      project: (value) => (value.trim().length === 0 ? 'Le projet est requis' : null),
-      category: (value) => (value.trim().length === 0 ? 'La catégorie est requise' : null),
+      name: (value) => (value.trim().length === 0 ? t('common:validation.required') : null),
+      project: (value) => (value.trim().length === 0 ? t('common:validation.required') : null),
+      category: (value) => (value.trim().length === 0 ? t('common:validation.required') : null),
     },
   })
 
