@@ -7,6 +7,7 @@ import {
   IconPlus,
 } from '@tabler/icons-react'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useDashboardData } from '../../api/queries'
 import { ArchivesList } from '../../components/Dashboard/ArchivesList'
 import { StatsCard } from '../../components/Dashboard/StatsCard'
@@ -16,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 })
 
 function DashboardPage() {
+  const { t } = useTranslation()
   const { stats, recentTests, isLoading, isError, error } = useDashboardData()
 
   if (isLoading) {
@@ -28,8 +30,8 @@ function DashboardPage() {
 
   if (isError) {
     return (
-      <Alert color="red" title="Erreur">
-        {error?.message || 'Une erreur est survenue lors du chargement des données'}
+      <Alert color="red" title={t('dashboard.error.title')}>
+        {error?.message || t('dashboard.error.message')}
       </Alert>
     )
   }
@@ -40,10 +42,10 @@ function DashboardPage() {
 
   // Calculate variations (mock for now - would need historical data)
   const statsVariations = {
-    totalTests: '+12% vs mois dernier',
-    testsThisMonth: '+8% vs mois dernier',
-    activeProjects: '+2 nouveaux projets',
-    totalSize: '+15% vs mois dernier',
+    totalTests: t('dashboard.stats.totalArchives.variation', { percent: 12 }),
+    testsThisMonth: t('dashboard.stats.uploadsThisMonth.variation', { percent: 8 }),
+    activeProjects: t('dashboard.stats.activeProjects.variation', { count: 2 }),
+    totalSize: t('dashboard.stats.totalSize.variation', { percent: 15 }),
   }
 
   return (
@@ -51,7 +53,7 @@ function DashboardPage() {
       {/* Header with title and action button */}
       <Group justify="space-between" align="center">
         <Title order={1} size="h2">
-          Dashboard
+          {t('dashboard.title')}
         </Title>
         <Button
           component={Link}
@@ -63,35 +65,35 @@ function DashboardPage() {
             backgroundColor: '#030213',
           }}
         >
-          Nouvelle Archive
+          {t('dashboard.newArchive')}
         </Button>
       </Group>
 
       {/* Stats Cards Grid */}
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
         <StatsCard
-          title="Total des Archives"
+          title={t('dashboard.stats.totalArchives.title')}
           value={stats.totalTests}
           description={statsVariations.totalTests}
           icon={<IconArchive size={16} />}
           variant="positive"
         />
         <StatsCard
-          title="Uploads ce mois"
+          title={t('dashboard.stats.uploadsThisMonth.title')}
           value={stats.testsThisMonth}
           description={statsVariations.testsThisMonth}
           icon={<IconCloudUpload size={16} />}
           variant="positive"
         />
         <StatsCard
-          title="Projets Actifs"
+          title={t('dashboard.stats.activeProjects.title')}
           value={stats.activeProjects}
           description={statsVariations.activeProjects}
           icon={<IconFolder size={16} />}
           variant="positive"
         />
         <StatsCard
-          title="Taille Totale"
+          title={t('dashboard.stats.totalSize.title')}
           value={stats.totalSize}
           description={statsVariations.totalSize}
           icon={<IconChartBar size={16} />}

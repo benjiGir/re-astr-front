@@ -1,28 +1,11 @@
 import { Button, Card, Stack, Text } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
-import type { Test, TestStatus } from '../../types/api'
+import { useTranslation } from 'react-i18next'
+import type { Test } from '../../types/api'
 import { ArchiveListItem } from './ArchiveListItem'
 
 interface ArchivesListProps {
   tests: Test[]
-}
-
-/**
- * Map TestStatus to ArchiveListItem status
- */
-function mapTestStatusToArchiveStatus(
-  status: TestStatus
-): 'active' | 'in_progress' | 'completed' {
-  switch (status) {
-    case 'in_progress':
-      return 'in_progress'
-    case 'completed':
-      return 'completed'
-    case 'draft':
-    case 'failed':
-    default:
-      return 'active'
-  }
 }
 
 /**
@@ -64,6 +47,8 @@ function getTestType(test: Test): string {
 }
 
 export function ArchivesList({ tests }: ArchivesListProps) {
+  const { t } = useTranslation()
+
   if (tests.length === 0) {
     return (
       <Card
@@ -77,10 +62,10 @@ export function ArchivesList({ tests }: ArchivesListProps) {
         <Stack gap="md">
           <Stack gap={4}>
             <Text size="md" fw={500} c="#0a0a0a">
-              Archives Récentes
+              {t('dashboard.recentArchives.title')}
             </Text>
             <Text size="md" c="#717182">
-              Aucune archive trouvée
+              {t('dashboard.recentArchives.noArchives')}
             </Text>
           </Stack>
         </Stack>
@@ -101,10 +86,10 @@ export function ArchivesList({ tests }: ArchivesListProps) {
         {/* Header */}
         <Stack gap={4}>
           <Text size="md" fw={500} c="#0a0a0a">
-            Archives Récentes
+            {t('dashboard.recentArchives.title')}
           </Text>
           <Text size="md" c="#717182">
-            Les dernières archives uploadées dans le système
+            {t('dashboard.recentArchives.description')}
           </Text>
         </Stack>
 
@@ -118,7 +103,7 @@ export function ArchivesList({ tests }: ArchivesListProps) {
               testType={getTestType(test)}
               date={formatDate(test.createdAt)}
               size={formatSize(test)}
-              status={mapTestStatusToArchiveStatus(test.status)}
+              status={test.status}
             />
           ))}
         </Stack>
@@ -135,7 +120,7 @@ export function ArchivesList({ tests }: ArchivesListProps) {
             marginTop: '16px',
           }}
         >
-          Voir toutes les archives
+          {t('dashboard.recentArchives.viewAll')}
         </Button>
       </Stack>
     </Card>
