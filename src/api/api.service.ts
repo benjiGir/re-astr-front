@@ -99,8 +99,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const projectsWithTests = new Set(tests.map(test => test.projectId))
   const activeProjects = projectsWithTests.size
 
-  // Mock total size for now (would need metadata.fileSize in tests)
-  // In a real scenario, this would sum up test.metadata?.fileSize
+  // Calculate total size from test.metadata.fileSize
   const totalSize = calculateTotalSize(tests)
 
   return {
@@ -113,25 +112,38 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 /**
  * Calculate total size from tests metadata
- * Falls back to mock data if no metadata.fileSize
+ * Returns 'N/A' if no file sizes are available
  */
 function calculateTotalSize(tests: Test[]): string {
   let totalBytes = 0
+  let hasAnySize = false
 
   for (const test of tests) {
     // Try to get fileSize from metadata
     const fileSize = test.metadata?.fileSize
     if (fileSize && typeof fileSize === 'number') {
       totalBytes += fileSize
-    } else {
-      // Mock: assign random size between 1MB and 5MB per test
-      totalBytes += Math.random() * 4 * 1024 * 1024 + 1024 * 1024
+      hasAnySize = true
     }
   }
 
-  // Convert bytes to GB
-  const totalGB = totalBytes / (1024 * 1024 * 1024)
-  return `${totalGB.toFixed(1)} GB`
+  // If no tests have file size data, return N/A
+  if (!hasAnySize) {
+    return 'N/A'
+  }
+
+  // Convert bytes to appropriate unit
+  if (totalBytes < 1024) {
+    return `${totalBytes} B`
+  }
+  if (totalBytes < 1024 * 1024) {
+    return `${(totalBytes / 1024).toFixed(1)} KB`
+  }
+  if (totalBytes < 1024 * 1024 * 1024) {
+    return `${(totalBytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
+  return `${(totalBytes / (1024 * 1024 * 1024)).toFixed(1)} GB`
 }
 
 /**

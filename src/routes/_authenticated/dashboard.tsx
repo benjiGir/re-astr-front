@@ -40,14 +40,6 @@ function DashboardPage() {
     return null
   }
 
-  // Calculate variations (mock for now - would need historical data)
-  const statsVariations = {
-    totalTests: t('dashboard.stats.totalArchives.variation', { percent: 12 }),
-    testsThisMonth: t('dashboard.stats.uploadsThisMonth.variation', { percent: 8 }),
-    activeProjects: t('dashboard.stats.activeProjects.variation', { count: 2 }),
-    totalSize: t('dashboard.stats.totalSize.variation', { percent: 15 }),
-  }
-
   return (
     <Stack gap="xl">
       {/* Header with title and action button */}
@@ -74,28 +66,24 @@ function DashboardPage() {
         <StatsCard
           title={t('dashboard.stats.totalArchives.title')}
           value={stats.totalTests}
-          description={statsVariations.totalTests}
           icon={<IconArchive size={16} />}
           variant="positive"
         />
         <StatsCard
           title={t('dashboard.stats.uploadsThisMonth.title')}
           value={stats.testsThisMonth}
-          description={statsVariations.testsThisMonth}
           icon={<IconCloudUpload size={16} />}
           variant="positive"
         />
         <StatsCard
           title={t('dashboard.stats.activeProjects.title')}
           value={stats.activeProjects}
-          description={statsVariations.activeProjects}
           icon={<IconFolder size={16} />}
           variant="positive"
         />
         <StatsCard
           title={t('dashboard.stats.totalSize.title')}
           value={stats.totalSize}
-          description={statsVariations.totalSize}
           icon={<IconChartBar size={16} />}
           variant="positive"
         />

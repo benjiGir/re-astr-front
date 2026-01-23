@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 interface StatsCardProps {
   title: string
   value: string | number
-  description: string
+  description?: string
   icon: ReactNode
   variant?: 'positive' | 'neutral'
 }

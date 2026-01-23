@@ -20,16 +20,24 @@ function formatDate(date: Date): string {
 }
 
 /**
- * Format file size from metadata or return mock
+ * Format file size from metadata or return N/A
  */
 function formatSize(test: Test): string {
   const fileSize = test.metadata?.fileSize
   if (fileSize && typeof fileSize === 'number') {
-    const mb = fileSize / (1024 * 1024)
-    return `${mb.toFixed(1)} MB`
+    // Convert bytes to appropriate unit
+    if (fileSize < 1024) {
+      return `${fileSize} B`
+    }
+    if (fileSize < 1024 * 1024) {
+      return `${(fileSize / 1024).toFixed(1)} KB`
+    }
+    if (fileSize < 1024 * 1024 * 1024) {
+      return `${(fileSize / (1024 * 1024)).toFixed(1)} MB`
+    }
+    return `${(fileSize / (1024 * 1024 * 1024)).toFixed(1)} GB`
   }
-  // Mock size
-  return `${(Math.random() * 4 + 1).toFixed(1)} MB`
+  return 'N/A'
 }
 
 /**
