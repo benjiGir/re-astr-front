@@ -16,7 +16,8 @@ import { IconPlus } from '@tabler/icons-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useCategories, useCategory } from '../../api/queries'
+import { useCategories, useCategory, useProjects } from '../../api/queries'
+import { PRIORITIES, TEST_TYPES } from '../../constants/test-metadata'
 import { FileUploadZone } from '../../components/Upload/FileUploadZone'
 import { DynamicField } from '../../components/Upload/DynamicField'
 
@@ -42,6 +43,7 @@ function UploadPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: categories, isLoading: loadingCategories } = useCategories()
+  const { data: projects, isLoading: loadingProjects } = useProjects()
   const [files, setFiles] = useState<FileWithPath[]>([])
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
@@ -116,6 +118,7 @@ function UploadPage() {
 
     // TODO: Implement mutation to create test
     // const testData: CreateTestDto = {
+    //   projectId: values.project,  // Now using projectId instead of metadata
     //   categoryId: values.category,
     //   name: values.name,
     //   description: values.description,
@@ -124,7 +127,6 @@ function UploadPage() {
     //   customData: {},
     //   metadata: {
     //     version: values.version,
-    //     project: values.project,
     //     testType: values.testType,
     //     priority: values.priority,
     //     author: values.author,
@@ -137,35 +139,24 @@ function UploadPage() {
     // }
   }
 
-  // Get unique projects from categories (mock for now)
-  const projects = [
-    { value: 'electromagnetic', label: 'Électromagnétisme' },
-    { value: 'vibration', label: 'Vibrations' },
-    { value: 'environmental', label: 'Environnement' },
-  ]
+  // Get test types and priorities from constants with translations
+  const testTypes = TEST_TYPES.map(type => ({
+    value: type,
+    label: t(`testTypes.${type}`),
+  }))
 
-  const testTypes = [
-    { value: 'integration', label: "Tests d'Intégration" },
-    { value: 'e2e', label: 'Tests End-to-End' },
-    { value: 'performance', label: 'Tests de Performance' },
-    { value: 'security', label: 'Tests de Sécurité' },
-    { value: 'unit', label: 'Tests Unitaires' },
-  ]
-
-  const priorities = [
-    { value: 'low', label: 'Basse' },
-    { value: 'medium', label: 'Moyenne' },
-    { value: 'high', label: 'Haute' },
-    { value: 'critical', label: 'Critique' },
-  ]
+  const priorities = PRIORITIES.map(priority => ({
+    value: priority,
+    label: t(`priorities.${priority}`),
+  }))
 
   return (
     <Stack gap="xl" style={{ maxWidth: '896px', margin: '0 auto' }}>
       {/* Header */}
       <Stack gap={4}>
-        <Title order={1}>Créer une Archive de Tests</Title>
+        <Title order={1}>{t('upload.title')}</Title>
         <Text c="#717182" size="md">
-          Uploadez vos documents de tests et créez une fiche d'archive complète
+          {t('upload.subtitle')}
         </Text>
       </Stack>
 
@@ -225,8 +216,9 @@ function UploadPage() {
                 <Select
                   label="Projet"
                   placeholder="Sélectionner un projet"
-                  data={projects}
+                  data={projects?.map((p) => ({ value: p.id, label: p.name })) || []}
                   required
+                  disabled={loadingProjects}
                   {...form.getInputProps('project')}
                 />
                 <Select

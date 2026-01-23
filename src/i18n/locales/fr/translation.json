@@ -102,5 +102,18 @@
     "in_progress": "En cours",
     "completed": "Terminé",
     "failed": "Échoué"
+  },
+  "testTypes": {
+    "integration": "Tests d'Intégration",
+    "e2e": "Tests End-to-End",
+    "performance": "Tests de Performance",
+    "security": "Tests de Sécurité",
+    "unit": "Tests Unitaires"
+  },
+  "priorities": {
+    "low": "Basse",
+    "medium": "Moyenne",
+    "high": "Haute",
+    "critical": "Critique"
   }
 }
