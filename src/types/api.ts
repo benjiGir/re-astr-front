@@ -85,6 +85,28 @@ export interface CustomFieldsSchema {
 }
 
 // ============================================
+// Project Types
+// ============================================
+
+export interface Project {
+  id: string
+  name: string
+  description?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CreateProjectDto {
+  name: string
+  description?: string
+}
+
+export interface UpdateProjectDto {
+  name?: string
+  description?: string
+}
+
+// ============================================
 // Category Types
 // ============================================
 
@@ -120,6 +142,7 @@ export type TestStatus = 'draft' | 'in_progress' | 'completed' | 'failed'
 
 export interface Test {
   id: string
+  projectId: string
   categoryId: string
   name: string
   description?: string
@@ -134,6 +157,7 @@ export interface Test {
 }
 
 export interface CreateTestDto {
+  projectId: string
   categoryId: string
   name: string
   description?: string

@@ -1,4 +1,4 @@
-import type { Category, Test } from '../types/api'
+import type { Category, Project, Test } from '../types/api'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
@@ -24,6 +24,18 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
 }
 
 // ============================================
+// Projects API
+// ============================================
+
+export async function getAllProjects(): Promise<Project[]> {
+  return apiFetch<Project[]>('/projects')
+}
+
+export async function getProjectById(id: string): Promise<Project> {
+  return apiFetch<Project>(`/projects/${id}`)
+}
+
+// ============================================
 // Categories API
 // ============================================
 
@@ -39,9 +51,13 @@ export async function getCategoryById(id: string): Promise<Category> {
 // Tests API
 // ============================================
 
-export async function getAllTests(categoryId?: string): Promise<Test[]> {
-  const params = categoryId ? `?categoryId=${categoryId}` : ''
-  return apiFetch<Test[]>(`/tests${params}`)
+export async function getAllTests(filters?: { categoryId?: string; projectId?: string }): Promise<Test[]> {
+  const params = new URLSearchParams()
+  if (filters?.categoryId) params.append('categoryId', filters.categoryId)
+  if (filters?.projectId) params.append('projectId', filters.projectId)
+
+  const queryString = params.toString()
+  return apiFetch<Test[]>(`/tests${queryString ? `?${queryString}` : ''}`)
 }
 
 export async function getTestById(id: string): Promise<Test> {
@@ -60,12 +76,12 @@ export interface DashboardStats {
 }
 
 /**
- * Calculate dashboard statistics from tests and categories
+ * Calculate dashboard statistics from tests, projects, and categories
  */
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const [tests, categories] = await Promise.all([
+  const [tests, projects] = await Promise.all([
     getAllTests(),
-    getAllCategories(),
+    getAllProjects(),
   ])
 
   // Total number of tests
@@ -79,9 +95,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     return createdAt >= startOfMonth
   }).length
 
-  // Unique categories (projects)
-  const uniqueCategoryIds = new Set(tests.map(test => test.categoryId))
-  const activeProjects = uniqueCategoryIds.size
+  // Active projects (projects that have at least one test)
+  const projectsWithTests = new Set(tests.map(test => test.projectId))
+  const activeProjects = projectsWithTests.size
 
   // Mock total size for now (would need metadata.fileSize in tests)
   // In a real scenario, this would sum up test.metadata?.fileSize

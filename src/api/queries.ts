@@ -6,10 +6,14 @@ import * as api from './api.service'
 // ============================================
 
 export const queryKeys = {
+  projects: {
+    all: ['projects'] as const,
+    detail: (id: string) => ['projects', id] as const,
+  },
   tests: {
     all: ['tests'] as const,
-    list: (categoryId?: string) =>
-      categoryId ? ['tests', { categoryId }] as const : ['tests'] as const,
+    list: (filters?: { categoryId?: string; projectId?: string }) =>
+      filters ? ['tests', filters] as const : ['tests'] as const,
     detail: (id: string) => ['tests', id] as const,
     recent: (limit: number) => ['tests', 'recent', { limit }] as const,
   },
@@ -20,6 +24,31 @@ export const queryKeys = {
   dashboard: {
     stats: ['dashboard', 'stats'] as const,
   },
+}
+
+// ============================================
+// Project Queries
+// ============================================
+
+/**
+ * Get all projects
+ */
+export function useProjects() {
+  return useQuery({
+    queryKey: queryKeys.projects.all,
+    queryFn: api.getAllProjects,
+  })
+}
+
+/**
+ * Get project by ID
+ */
+export function useProject(id: string) {
+  return useQuery({
+    queryKey: queryKeys.projects.detail(id),
+    queryFn: () => api.getProjectById(id),
+    enabled: !!id,
+  })
 }
 
 // ============================================
@@ -52,12 +81,12 @@ export function useCategory(id: string) {
 // ============================================
 
 /**
- * Get all tests (optionally filtered by category)
+ * Get all tests (optionally filtered by category and/or project)
  */
-export function useTests(categoryId?: string) {
+export function useTests(filters?: { categoryId?: string; projectId?: string }) {
   return useQuery({
-    queryKey: queryKeys.tests.list(categoryId),
-    queryFn: () => api.getAllTests(categoryId),
+    queryKey: queryKeys.tests.list(filters),
+    queryFn: () => api.getAllTests(filters),
   })
 }
 
