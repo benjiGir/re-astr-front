@@ -1,4 +1,4 @@
-import { SignInParams, SignOutOptions, SignUpParams } from '../types/authTypes.ts'
+import { SignInParams, SignUpParams } from '../types/authTypes.ts'
 import { authClient } from './auth-client.ts'
 
 export const signUp = async (params: SignUpParams) => {
@@ -24,22 +24,6 @@ export const signUp = async (params: SignUpParams) => {
     console.error('error sign up:', error)
     throw error
   }
-}
-
-export const signUp = async (params: SignUpParams) => {
-
-    try {
-        return authClient.signUp.email(
-            {
-                email: params.email,
-                password: params.password,
-                name: params.name,
-            },
-        )
-    } catch (error) {
-        console.error("error sign up:", error)
-        throw error
-    }
 }
 
 export const signIn = async (params: SignInParams) => {

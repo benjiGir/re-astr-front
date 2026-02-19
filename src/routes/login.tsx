@@ -1,15 +1,25 @@
-import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
-import {useForm} from '@mantine/form'
-import {createFileRoute} from "@tanstack/react-router";
-import {IconAlertCircle} from "@tabler/icons-react";
-import {useSignIn} from "../auth/hooks.ts";
+import {
+  Alert,
+  Button,
+  Container,
+  Flex,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { createFileRoute } from '@tanstack/react-router'
+import { useSignIn } from '../auth/hooks.ts'
 
 export const Route = createFileRoute('/login')({
   component: Signin,
 })
 
 function Signin() {
-    const {mutate : signIn, isPending, error} = useSignIn()
+  const { mutate: signIn, isPending, error } = useSignIn()
 
   const form = useForm({
     initialValues: {
@@ -22,13 +32,11 @@ function Signin() {
     },
   })
 
-
-    const handleSubmit = async (values: typeof form.values) => {
-        signIn({
-            email: values.email,
-            password: values.password,
-        })
-    }
+  const handleSubmit = (values: typeof form.values) => {
+    signIn({
+      email: values.email,
+      password: values.password,
+    })
   }
 
   return (
@@ -44,37 +52,35 @@ function Signin() {
               <form id="formgroup-legend-id" onSubmit={form.onSubmit(handleSubmit)}>
                 {error && (
                   <Alert icon={<IconAlertCircle size={16} />} title="Erreur" color="red">
-                    {error}
+                    {error.message}
                   </Alert>
                 )}
                 <Stack gap="md">
-                    <Stack gap="xs">
-                        <Text size="l" fw={500}>Connexion Backoffice</Text>
-                        <Text size="sm">Connectez-vous pour accéder au système de gestion d'archives</Text>
-                        <form id="formgroup-legend-id" onSubmit={form.onSubmit(handleSubmit)}>
-                            {error && (
-                                <Alert icon={<IconAlertCircle size={16}/>} title="Erreur" color="red">
-                                    {error.message}
-                                </Alert>
-                            )}
-                            <Stack gap='md'>
-                                <TextInput
-                                    variant="filled" radius="md"
-                                    label="Email"
-                                    placeholder="votre@email.com"
-                                    required
-                                    {...form.getInputProps('email')}
-                                />
-                                <PasswordInput variant="filled" radius="md" label="Mot de passe"
-                                               required
-                                               {...form.getInputProps('password')}
-                                               placeholder="••••••••"/>
-                                <Button type="submit" bg={"dark"} radius="md" fullWidth={true} loading={isPending}>
-                                    Se connecter
-                                </Button>
-                            </Stack>
-                        </form>
-                    </Stack>
+                  <TextInput
+                    variant="filled"
+                    radius="md"
+                    label="Email"
+                    placeholder="votre@email.com"
+                    required
+                    {...form.getInputProps('email')}
+                  />
+                  <PasswordInput
+                    variant="filled"
+                    radius="md"
+                    label="Mot de passe"
+                    required
+                    {...form.getInputProps('password')}
+                    placeholder="••••••••"
+                  />
+                  <Button
+                    type="submit"
+                    bg={'dark'}
+                    radius="md"
+                    fullWidth={true}
+                    loading={isPending}
+                  >
+                    Se connecter
+                  </Button>
                 </Stack>
               </form>
             </Stack>
