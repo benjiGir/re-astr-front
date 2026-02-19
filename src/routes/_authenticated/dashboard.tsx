@@ -1,9 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import {createFileRoute} from '@tanstack/react-router'
+import {useCurrentUser} from "../../auth/hooks.ts";
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
-  component: RouteComponent,
+    component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/dashboard"!</div>
+    const {user} = useCurrentUser()
+
+    return <div>Hello "/dashboard" {user?.name}!</div>
 }
+
