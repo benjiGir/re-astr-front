@@ -1,6 +1,5 @@
 import {QueryClient, queryOptions} from "@tanstack/react-query";
-import {getSession, signIn} from "./auth.service.ts";
-import {signOut} from "better-auth/api";
+import {getSession, signIn,signOut} from "./auth.service.ts";
 import {SignInParams, UserInfo} from "../types/authTypes.ts";
 import {Data} from "../types/types.ts";
 
@@ -11,7 +10,6 @@ export const userQueryOptions = queryOptions({
     queryKey: userQueryKey,
     queryFn: async () => {
         const session = await getSession();
-        console.log("session", session);
         return session?.data?.user ?? null
     }
 });
@@ -26,7 +24,7 @@ export const signInMutation = {
 };
 
 export const signOutMutation = {
-    mutationFn: async () => signOut,
+    mutationFn: signOut,
     onSuccess: async (ctx: {
         queryClient: QueryClient
     } | undefined) => ctx?.queryClient?.removeQueries({queryKey: userQueryKey}),
