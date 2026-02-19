@@ -1,10 +1,8 @@
 import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
 import {useForm} from '@mantine/form'
 import {createFileRoute} from "@tanstack/react-router";
-import {useState} from "react";
 import {IconAlertCircle} from "@tabler/icons-react";
-import useUserStore from "../stores/userStore.tsx";
-import {signIn} from "../auth/auth.service.ts";
+import {useSignIn} from "../auth/hooks.ts";
 
 
 export const Route = createFileRoute('/login')({
@@ -12,9 +10,7 @@ export const Route = createFileRoute('/login')({
 })
 
 function Signin() {
-    const {setUser} = useUserStore()
-    const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
+    const {mutate : signIn, isPending, error} = useSignIn()
 
     const form = useForm({
         initialValues: {
@@ -27,21 +23,12 @@ function Signin() {
         },
     })
 
+
     const handleSubmit = async (values: typeof form.values) => {
-        setLoading(true)
-        setError('')
-        try {
-            const res = await signIn({
-                email: values.email,
-                password: values.password,
-                callbackURL: '/dashboard',
-            });
-            setUser(res?.data?.user ?? null);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'error signIn')
-        } finally {
-            setLoading(false)
-        }
+        signIn({
+            email: values.email,
+            password: values.password,
+        })
     }
 
     return <Container fluid h="100vh" bg="#E6EEFF">
@@ -58,7 +45,7 @@ function Signin() {
                         <form id="formgroup-legend-id" onSubmit={form.onSubmit(handleSubmit)}>
                             {error && (
                                 <Alert icon={<IconAlertCircle size={16}/>} title="Erreur" color="red">
-                                    {error}
+                                    {error.message}
                                 </Alert>
                             )}
                             <Stack gap='md'>
@@ -73,7 +60,7 @@ function Signin() {
                                                required
                                                {...form.getInputProps('password')}
                                                placeholder="••••••••"/>
-                                <Button type="submit" bg={"dark"} radius="md" fullWidth={true} loading={loading}>
+                                <Button type="submit" bg={"dark"} radius="md" fullWidth={true} loading={isPending}>
                                     Se connecter
                                 </Button>
                             </Stack>

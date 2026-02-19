@@ -1,9 +1,16 @@
-export type User ={
+export type User = {
     id: string
-    createdAt: Date
-    updatedAt: Date
     email: string
-    emailVerified: boolean
     name: string
-    image?: string | null | undefined
+    image: string | null | undefined
+    emailVerified: boolean
+    createdAt: string | Date
+    updatedAt: string | Date
 }
+
+export type Data<T> = {
+    data: T,
+    code: number,
+    message?: string
+}
+

@@ -3,7 +3,7 @@ import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextI
 import {IconAlertCircle} from "@tabler/icons-react";
 import {useState} from "react";
 import {useForm} from "@mantine/form";
-import AuthService from "../auth/auth.service.ts";
+import {signUp} from "../auth/auth.service.ts";
 
 export const Route = createFileRoute('/signup')({
     component: RouteComponent,
@@ -38,7 +38,7 @@ function RouteComponent() {
         setError('')
 
         try {
-            await AuthService.signUp({
+            await signUp({
                 email: values.email,
                 password: values.password,
                 name: values.name,

@@ -1,21 +1,18 @@
 import {createFileRoute, redirect} from '@tanstack/react-router'
 import authenticatedLayout from "../layouts/AuthenticatedLayout.tsx";
-import AuthService from "../auth/auth.service.ts";
+import {userQueryOptions} from "../auth/auth.queries.ts";
+import {queryClient} from "../services/queryClient.ts";
 
 
 export const Route = createFileRoute('/_authenticated')({
     beforeLoad: async ({location}) => {
-            const session = await AuthService.getSession();
-        if (!session || !session.data) {
-                throw redirect({
-                    to: '/login',
-                    search: {
-                        redirect: location.href,
-                    },
-                });
-            }
-
-        return { session, user: session.data?.user };
+        const user = await queryClient.ensureQueryData(userQueryOptions);
+        if (!user) {
+            throw redirect({
+                to: "/login",
+                search: {redirect: location.href}
+            })
+        }
     },
     component: authenticatedLayout,
 })
