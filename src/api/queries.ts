@@ -10,6 +10,9 @@ export const queryKeys = {
     all: ['projects'] as const,
     detail: (id: string) => ['projects', id] as const,
   },
+  users: {
+    all: ['users'] as const,
+  },
   tests: {
     all: ['tests'] as const,
     list: (filters?: { categoryId?: string; projectId?: string }) =>
@@ -48,6 +51,20 @@ export function useProject(id: string) {
     queryKey: queryKeys.projects.detail(id),
     queryFn: () => api.getProjectById(id),
     enabled: !!id,
+  })
+}
+
+// ============================================
+// User Queries
+// ============================================
+
+/**
+ * Get all users
+ */
+export function useUsers() {
+  return useQuery({
+    queryKey: queryKeys.users.all,
+    queryFn: api.getAllUsers,
   })
 }
 
@@ -123,6 +140,43 @@ export function useDashboardStats() {
     queryKey: queryKeys.dashboard.stats,
     queryFn: api.getDashboardStats,
   })
+}
+
+// ============================================
+// Combined Archive Search Query
+// ============================================
+
+/**
+ * Get all tests enriched with project name, category name, and author name
+ * for the archive search page
+ */
+export function useArchiveSearchData() {
+  const testsQuery = useTests()
+  const projectsQuery = useProjects()
+  const categoriesQuery = useCategories()
+  const usersQuery = useUsers()
+
+  const tests = testsQuery.data?.map((test) => {
+    const project = projectsQuery.data?.find((p) => p.id === test.projectId)
+    const category = categoriesQuery.data?.find((c) => c.id === test.categoryId)
+    const author = usersQuery.data?.find((u) => u.id === test.createdBy)
+    return {
+      ...test,
+      projectName: project?.name || test.projectId,
+      categoryName: category?.name || test.categoryId,
+      authorName: author?.name || author?.email || test.createdBy,
+    }
+  })
+
+  return {
+    tests,
+    projects: projectsQuery.data,
+    categories: categoriesQuery.data,
+    isLoading:
+      testsQuery.isPending || projectsQuery.isPending || categoriesQuery.isPending || usersQuery.isPending,
+    isError: testsQuery.isError || projectsQuery.isError || categoriesQuery.isError || usersQuery.isError,
+    error: testsQuery.error || projectsQuery.error || categoriesQuery.error || usersQuery.error,
+  }
 }
 
 // ============================================

@@ -119,7 +119,7 @@ export function ArchivesList({ tests }: ArchivesListProps) {
         {/* View all button */}
         <Button
           component={Link}
-          to="/archives"
+          to="/search"
           variant="outline"
           color="gray"
           radius="md"
