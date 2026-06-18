@@ -151,6 +151,7 @@ export interface Test {
   customData: Record<string, any>
   metadata?: Record<string, any>
   createdBy: string
+  createdByName?: string | null
   createdAt: Date
   updatedAt: Date
   completedAt?: Date
