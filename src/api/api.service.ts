@@ -1,4 +1,4 @@
-import type { Category, Project, Test, User } from '../types/api'
+import type { Category, Project, Test } from '../types/api'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
@@ -45,14 +45,6 @@ export async function getAllCategories(): Promise<Category[]> {
 
 export async function getCategoryById(id: string): Promise<Category> {
   return apiFetch<Category>(`/categories/${id}`)
-}
-
-// ============================================
-// Users API
-// ============================================
-
-export async function getAllUsers(): Promise<User[]> {
-  return apiFetch<User[]>('/users')
 }
 
 // ============================================
