@@ -145,7 +145,7 @@ export function useArchiveSearchData() {
       ...test,
       projectName: project?.name || test.projectId,
       categoryName: category?.name || test.categoryId,
-      authorName: test.metadata?.author || test.createdBy,
+      authorName: test.createdByName || test.metadata?.author || test.createdBy,
     }
   })
 
