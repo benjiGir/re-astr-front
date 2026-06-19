@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import type { TestStatus } from '../types/api'
 import * as api from './api.service'
 
@@ -94,6 +94,7 @@ export function useTestSearch(filters?: TestFilters) {
   return useQuery({
     queryKey: queryKeys.tests.search(filters),
     queryFn: () => api.searchTests(filters ?? {}),
+    placeholderData: keepPreviousData,
   })
 }
 

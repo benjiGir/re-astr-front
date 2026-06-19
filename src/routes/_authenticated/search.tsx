@@ -46,14 +46,6 @@ function SearchPage() {
     )
   }
 
-  if (isError) {
-    return (
-      <Alert color="red" title={t('search.error.title')}>
-        {error?.message || t('search.error.message')}
-      </Alert>
-    )
-  }
-
   return (
     <Stack gap="xl">
       <Stack gap={4}>
@@ -68,6 +60,7 @@ function SearchPage() {
           <Group align="flex-start">
             <TextInput
               flex={1}
+              aria-label={t('search.searchPlaceholder')}
               leftSection={<IconSearch size={16} />}
               placeholder={t('search.searchPlaceholder')}
               value={query}
@@ -117,19 +110,25 @@ function SearchPage() {
         </Stack>
       </Card>
 
-      <Card withBorder radius="md" padding="lg" style={{ borderColor: 'rgba(0, 0, 0, 0.1)' }}>
-        <Stack gap="md">
-          <Text size="sm" c="#717182">
-            {t('search.resultsCount', { count: filteredTests.length })}
-          </Text>
+      {isError ? (
+        <Alert color="red" title={t('search.error.title')}>
+          {error?.message || t('search.error.message')}
+        </Alert>
+      ) : (
+        <Card withBorder radius="md" padding="lg" style={{ borderColor: 'rgba(0, 0, 0, 0.1)' }}>
+          <Stack gap="md">
+            <Text size="sm" c="#717182">
+              {t('search.resultsCount', { count: filteredTests.length })}
+            </Text>
 
-          {filteredTests.length === 0 ? (
-            <Text c="#717182">{t('search.noResults')}</Text>
-          ) : (
-            <ArchiveResultsTable tests={filteredTests} />
-          )}
-        </Stack>
-      </Card>
+            {filteredTests.length === 0 ? (
+              <Text c="#717182">{t('search.noResults')}</Text>
+            ) : (
+              <ArchiveResultsTable tests={filteredTests} />
+            )}
+          </Stack>
+        </Card>
+      )}
     </Stack>
   )
 }

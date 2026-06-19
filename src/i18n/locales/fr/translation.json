@@ -139,7 +139,9 @@
       "author": "Auteur",
       "date": "Date",
       "status": "Statut",
-      "actions": "Actions"
+      "actions": "Actions",
+      "view": "Voir l'archive",
+      "download": "Télécharger l'archive"
     },
     "error": {
       "title": "Erreur",
