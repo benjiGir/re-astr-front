@@ -1,4 +1,4 @@
-import type { Category, Project, Test } from '../types/api'
+import type { Category, Project, Test, TestStatus } from '../types/api'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
@@ -51,13 +51,22 @@ export async function getCategoryById(id: string): Promise<Category> {
 // Tests API
 // ============================================
 
-export async function getAllTests(filters?: { categoryId?: string; projectId?: string }): Promise<Test[]> {
-  const params = new URLSearchParams()
-  if (filters?.categoryId) params.append('categoryId', filters.categoryId)
-  if (filters?.projectId) params.append('projectId', filters.projectId)
+export async function getAllTests(): Promise<Test[]> {
+  return apiFetch<Test[]>('/tests')
+}
 
-  const queryString = params.toString()
-  return apiFetch<Test[]>(`/tests${queryString ? `?${queryString}` : ''}`)
+export interface TestSearchFilters {
+  categoryId?: string
+  projectId?: string
+  status?: TestStatus
+  search?: string
+}
+
+export async function searchTests(filters: TestSearchFilters): Promise<Test[]> {
+  return apiFetch<Test[]>('/tests/search', {
+    method: 'POST',
+    body: JSON.stringify(filters),
+  })
 }
 
 export async function getTestById(id: string): Promise<Test> {

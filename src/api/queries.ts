@@ -1,5 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
+import type { TestStatus } from '../types/api'
 import * as api from './api.service'
+
+export interface TestFilters {
+  categoryId?: string
+  projectId?: string
+  status?: TestStatus
+  search?: string
+}
 
 // ============================================
 // Query Keys
@@ -12,8 +20,7 @@ export const queryKeys = {
   },
   tests: {
     all: ['tests'] as const,
-    list: (filters?: { categoryId?: string; projectId?: string }) =>
-      filters ? ['tests', filters] as const : ['tests'] as const,
+    search: (filters?: TestFilters) => ['tests', 'search', filters ?? {}] as const,
     detail: (id: string) => ['tests', id] as const,
     recent: (limit: number) => ['tests', 'recent', { limit }] as const,
   },
@@ -81,12 +88,12 @@ export function useCategory(id: string) {
 // ============================================
 
 /**
- * Get all tests (optionally filtered by category and/or project)
+ * Search tests (optionally filtered by category, project, status, and/or free text)
  */
-export function useTests(filters?: { categoryId?: string; projectId?: string }) {
+export function useTestSearch(filters?: TestFilters) {
   return useQuery({
-    queryKey: queryKeys.tests.list(filters),
-    queryFn: () => api.getAllTests(filters),
+    queryKey: queryKeys.tests.search(filters),
+    queryFn: () => api.searchTests(filters ?? {}),
   })
 }
 
@@ -133,8 +140,8 @@ export function useDashboardStats() {
  * Get all tests enriched with project name, category name, and author name
  * for the archive search page
  */
-export function useArchiveSearchData() {
-  const testsQuery = useTests()
+export function useArchiveSearchData(filters?: TestFilters) {
+  const testsQuery = useTestSearch(filters)
   const projectsQuery = useProjects()
   const categoriesQuery = useCategories()
 
