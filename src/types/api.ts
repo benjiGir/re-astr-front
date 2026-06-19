@@ -138,7 +138,7 @@ export interface UpdateCategoryDto {
 // Test Types
 // ============================================
 
-export type TestStatus = 'draft' | 'in_progress' | 'completed' | 'failed'
+export type TestStatus = 'draft' | 'in_progress' | 'completed' | 'failed' | 'archived'
 
 export interface Test {
   id: string

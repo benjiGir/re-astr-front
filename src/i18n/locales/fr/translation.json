@@ -101,7 +101,8 @@
     "draft": "Brouillon",
     "in_progress": "En cours",
     "completed": "Terminé",
-    "failed": "Échoué"
+    "failed": "Échoué",
+    "archived": "Archivé"
   },
   "testTypes": {
     "integration": "Tests d'Intégration",

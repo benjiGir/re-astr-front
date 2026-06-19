@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_authenticated/search')({
   component: SearchPage,
 })
 
-const STATUS_OPTIONS: TestStatus[] = ['draft', 'in_progress', 'completed', 'failed']
+const STATUS_OPTIONS: TestStatus[] = ['draft', 'in_progress', 'completed', 'failed', 'archived']
 
 function SearchPage() {
   const { t } = useTranslation()
