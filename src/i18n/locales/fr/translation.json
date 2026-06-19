@@ -1,0 +1,119 @@
+{
+  "app": {
+    "name": "Système de Gestion d'Archives"
+  },
+  "nav": {
+    "archiveManager": "Archive Manager",
+    "dashboard": "Dashboard",
+    "uploadArchive": "Upload Archive",
+    "projectsCategories": "Projets & Catégories",
+    "search": "Recherche",
+    "logout": "Déconnexion"
+  },
+  "upload": {
+    "title": "Créer une Archive de Tests",
+    "subtitle": "Uploadez vos documents de tests et créez une fiche d'archive complète",
+    "filesSection": {
+      "title": "Fichiers de Tests",
+      "description": "Uploadez vos documents, scripts de tests et autres fichiers associés",
+      "dropzoneText": "Cliquez pour sélectionner des fichiers ou glissez-déposez",
+      "maxSize": "Taille maximale : {{size}} MB par fichier",
+      "removeFile": "Supprimer"
+    },
+    "basicInfoSection": {
+      "title": "Informations de Base",
+      "name": "Nom de l'Archive",
+      "namePlaceholder": "Ex: Tests API v2.1",
+      "version": "Version",
+      "versionPlaceholder": "Ex: 2.1.0",
+      "project": "Projet",
+      "projectPlaceholder": "Sélectionner un projet",
+      "category": "Catégorie",
+      "categoryPlaceholder": "Sélectionner une catégorie",
+      "testType": "Type de Test",
+      "testTypePlaceholder": "Sélectionner un type",
+      "priority": "Priorité",
+      "priorityPlaceholder": "Sélectionner une priorité",
+      "author": "Auteur",
+      "authorPlaceholder": "Nom de l'auteur",
+      "environment": "Environnement",
+      "environmentPlaceholder": "Ex: Production, Staging"
+    },
+    "detailsSection": {
+      "title": "Description et Détails",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez l'objectif et le contenu de cette archive",
+      "prerequisites": "Prérequis",
+      "prerequisitesPlaceholder": "Listez les prérequis nécessaires",
+      "expectedResults": "Résultats Attendus",
+      "expectedResultsPlaceholder": "Décrivez les résultats attendus"
+    },
+    "specificFieldsSection": {
+      "title": "Champs Spécifiques",
+      "description": "Champs requis pour la catégorie \"{{categoryName}}\""
+    },
+    "tagsSection": {
+      "title": "Tags",
+      "description": "Ajoutez des tags pour faciliter la recherche et l'organisation",
+      "placeholder": "Ajouter un tag",
+      "add": "Ajouter"
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "submit": "Créer l'Archive"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "newArchive": "Nouvelle Archive",
+    "loading": "Chargement...",
+    "error": {
+      "title": "Erreur",
+      "message": "Une erreur est survenue lors du chargement des données"
+    },
+    "stats": {
+      "totalArchives": {
+        "title": "Total des Archives",
+        "variation": "+{{percent}}% vs mois dernier"
+      },
+      "uploadsThisMonth": {
+        "title": "Uploads ce mois",
+        "variation": "+{{percent}}% vs mois dernier"
+      },
+      "activeProjects": {
+        "title": "Projets Actifs",
+        "variation": "+{{count}} nouveaux projets",
+        "variation_plural": "+{{count}} nouveaux projets"
+      },
+      "totalSize": {
+        "title": "Taille Totale",
+        "variation": "+{{percent}}% vs mois dernier"
+      }
+    },
+    "recentArchives": {
+      "title": "Archives Récentes",
+      "description": "Les dernières archives uploadées dans le système",
+      "noArchives": "Aucune archive trouvée",
+      "viewAll": "Voir toutes les archives"
+    }
+  },
+  "status": {
+    "draft": "Brouillon",
+    "in_progress": "En cours",
+    "completed": "Terminé",
+    "failed": "Échoué"
+  },
+  "testTypes": {
+    "integration": "Tests d'Intégration",
+    "e2e": "Tests End-to-End",
+    "performance": "Tests de Performance",
+    "security": "Tests de Sécurité",
+    "unit": "Tests Unitaires"
+  },
+  "priorities": {
+    "low": "Basse",
+    "medium": "Moyenne",
+    "high": "Haute",
+    "critical": "Critique"
+  }
+}

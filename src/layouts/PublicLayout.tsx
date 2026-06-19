@@ -1,13 +1,13 @@
-import {TanStackRouterDevtools} from "@tanstack/react-router-devtools";
-import {Outlet} from "@tanstack/react-router";
+import { Outlet } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 const PublicLayout = () => {
-    return (
-        <>
-            <Outlet/>
-            <TanStackRouterDevtools/>
-        </>
-    )
+  return (
+    <>
+      <Outlet />
+      <TanStackRouterDevtools />
+    </>
+  )
 }
 
-export default PublicLayout;
+export default PublicLayout

@@ -1,7 +1,7 @@
-const endpoint ={
-  auth :{
-    login : "/login",
-  }
+const endpoint = {
+  auth: {
+    login: '/login',
+  },
 }
 
-export default endpoint;
+export default endpoint

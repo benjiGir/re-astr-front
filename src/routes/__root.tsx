@@ -1,7 +1,4 @@
-import {createRootRoute} from '@tanstack/react-router'
-import PublicLayout from "../layouts/PublicLayout.tsx";
+import { createRootRoute } from '@tanstack/react-router'
+import PublicLayout from '../layouts/PublicLayout.tsx'
 
-
-
-export const Route = createRootRoute(
-    {component: PublicLayout})
+export const Route = createRootRoute({ component: PublicLayout })
