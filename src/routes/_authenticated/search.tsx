@@ -1,8 +1,8 @@
 import { Alert, Button, Card, Collapse, Group, Loader, Select, Stack, Text, TextInput, Title } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useArchiveSearchData } from '../../api/queries'
 import { ArchiveResultsTable } from '../../components/Search/ArchiveResultsTable'
@@ -16,12 +16,19 @@ const STATUS_OPTIONS: TestStatus[] = ['draft', 'in_progress', 'completed', 'fail
 
 function SearchPage() {
   const { t } = useTranslation()
-  const { tests, projects, categories, isLoading, isError, error } = useArchiveSearchData()
   const [filtersOpened, { toggle: toggleFilters }] = useDisclosure(false)
   const [query, setQuery] = useState('')
   const [projectFilter, setProjectFilter] = useState<string | null>(null)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<string | null>(null)
+  const [statusFilter, setStatusFilter] = useState<TestStatus | null>(null)
+  const [debouncedQuery] = useDebouncedValue(query, 300)
+
+  const { tests, projects, categories, isLoading, isError, error } = useArchiveSearchData({
+    projectId: projectFilter ?? undefined,
+    categoryId: categoryFilter ?? undefined,
+    status: statusFilter ?? undefined,
+    search: debouncedQuery.trim() || undefined,
+  })
 
   const resetFilters = () => {
     setProjectFilter(null)
@@ -29,23 +36,7 @@ function SearchPage() {
     setStatusFilter(null)
   }
 
-  const filteredTests = useMemo(() => {
-    if (!tests) return []
-    const q = query.trim().toLowerCase()
-    return tests.filter((test) => {
-      const tags = (test.metadata?.tags as string[] | undefined) ?? []
-      const matchesQuery =
-        !q ||
-        test.name.toLowerCase().includes(q) ||
-        test.description?.toLowerCase().includes(q) ||
-        test.authorName?.toLowerCase().includes(q) ||
-        tags.some((tag) => tag.toLowerCase().includes(q))
-      const matchesProject = !projectFilter || test.projectId === projectFilter
-      const matchesCategory = !categoryFilter || test.categoryId === categoryFilter
-      const matchesStatus = !statusFilter || test.status === statusFilter
-      return matchesQuery && matchesProject && matchesCategory && matchesStatus
-    })
-  }, [tests, query, projectFilter, categoryFilter, statusFilter])
+  const filteredTests = tests ?? []
 
   if (isLoading) {
     return (
@@ -115,7 +106,7 @@ function SearchPage() {
                 label={t('search.filters.status')}
                 data={STATUS_OPTIONS.map((s) => ({ value: s, label: t(`status.${s}`) }))}
                 value={statusFilter}
-                onChange={setStatusFilter}
+                onChange={(value) => setStatusFilter(value as TestStatus | null)}
                 clearable
               />
               <Button variant="outline" color="gray" onClick={resetFilters} mt={24}>
