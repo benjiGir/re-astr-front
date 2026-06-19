@@ -29,6 +29,11 @@ const statusConfig: Record<TestStatus, StatusBadgeStyle> = {
     color: 'white',
     variant: 'filled',
   },
+  archived: {
+    bg: '#eceef2',
+    color: '#717182',
+    variant: 'filled',
+  },
 }
 
 export function getStatusBadgeStyle(status: TestStatus): StatusBadgeStyle {

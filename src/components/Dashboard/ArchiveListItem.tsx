@@ -33,6 +33,11 @@ const statusConfig: Record<TestStatus, { bg: string; color: string; variant: 'fi
     color: 'white',
     variant: 'filled',
   },
+  archived: {
+    bg: '#eceef2',
+    color: '#717182',
+    variant: 'filled',
+  },
 }
 
 export function ArchiveListItem({
