@@ -101,7 +101,8 @@
     "draft": "Brouillon",
     "in_progress": "En cours",
     "completed": "Terminé",
-    "failed": "Échoué"
+    "failed": "Échoué",
+    "archived": "Archivé"
   },
   "testTypes": {
     "integration": "Tests d'Intégration",
@@ -115,5 +116,36 @@
     "medium": "Moyenne",
     "high": "Haute",
     "critical": "Critique"
+  },
+  "search": {
+    "title": "Recherche d'Archives",
+    "subtitle": "Trouvez rapidement vos archives de tests avec les filtres avancés",
+    "searchPlaceholder": "Rechercher par nom, description, auteur ou tags...",
+    "filtersButton": "Filtres",
+    "filters": {
+      "project": "Projet",
+      "category": "Catégorie",
+      "status": "Statut",
+      "all": "Tous"
+    },
+    "resetFilters": "Réinitialiser les filtres",
+    "resultsCount": "Résultats de la recherche ({{count}} archive)",
+    "resultsCount_plural": "Résultats de la recherche ({{count}} archives)",
+    "noResults": "Aucune archive ne correspond à votre recherche",
+    "table": {
+      "archive": "Archive",
+      "project": "Projet",
+      "category": "Catégorie",
+      "author": "Auteur",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions",
+      "view": "Voir l'archive",
+      "download": "Télécharger l'archive"
+    },
+    "error": {
+      "title": "Erreur",
+      "message": "Une erreur est survenue lors du chargement des archives"
+    }
   }
 }

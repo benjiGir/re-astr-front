@@ -138,7 +138,7 @@ export interface UpdateCategoryDto {
 // Test Types
 // ============================================
 
-export type TestStatus = 'draft' | 'in_progress' | 'completed' | 'failed'
+export type TestStatus = 'draft' | 'in_progress' | 'completed' | 'failed' | 'archived'
 
 export interface Test {
   id: string
@@ -151,6 +151,7 @@ export interface Test {
   customData: Record<string, any>
   metadata?: Record<string, any>
   createdBy: string
+  createdByName?: string | null
   createdAt: Date
   updatedAt: Date
   completedAt?: Date

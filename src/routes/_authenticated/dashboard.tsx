@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { useDashboardData } from '../../api/queries'
+import { useDashboardData } from '../../api/queries/dashboard.queries'
 import { ArchivesList } from '../../components/Dashboard/ArchivesList'
 import { StatsCard } from '../../components/Dashboard/StatsCard'
 
