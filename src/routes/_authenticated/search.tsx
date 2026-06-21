@@ -4,7 +4,7 @@ import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useArchiveSearchData } from '../../api/queries'
+import { useArchiveSearchData } from '../../api/queries/tests.queries'
 import { ArchiveResultsTable } from '../../components/Search/ArchiveResultsTable'
 import type { TestStatus } from '../../types/api'
 
