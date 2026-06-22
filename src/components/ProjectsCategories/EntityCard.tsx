@@ -55,16 +55,16 @@ export function EntityCard({
           </Text>
         ) : null}
 
-        <Group justify="space-between" mt="xs">
-          <Stack gap={0}>
+        <Stack gap="xs" mt="xs">
+          <Group justify="space-between" wrap="nowrap">
             <Text size="xs" c="#717182">
               {t('projectsCategories.archives')}
             </Text>
             <Text size="sm" fw={500} c="#0a0a0a">
               {archiveCount}
             </Text>
-          </Stack>
-          <Stack gap={0}>
+          </Group>
+          <Group justify="space-between" wrap="nowrap">
             <Text size="xs" c="#717182">
               {t('projectsCategories.status')}
             </Text>
@@ -75,16 +75,16 @@ export function EntityCard({
             >
               {t('projectsCategories.statusActive')}
             </Badge>
-          </Stack>
-          <Stack gap={0}>
+          </Group>
+          <Group justify="space-between" wrap="nowrap">
             <Text size="xs" c="#717182">
               {t('projectsCategories.createdAt')}
             </Text>
             <Text size="sm" fw={500} c="#0a0a0a">
               {formatDate(createdAt)}
             </Text>
-          </Stack>
-        </Group>
+          </Group>
+        </Stack>
       </Stack>
     </Card>
   )
