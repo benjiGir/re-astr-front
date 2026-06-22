@@ -190,11 +190,53 @@ function ProjectsPage() {
         />
       </Card>
 
-      <Tabs value={activeTab} onChange={(value) => setActiveTab((value as TabValue) ?? 'projects')}>
+      <Tabs
+        value={activeTab}
+        onChange={(value) => setActiveTab((value as TabValue) ?? 'projects')}
+        unstyled
+      >
         <Group justify="space-between" align="center">
-          <Tabs.List>
-            <Tabs.Tab value="projects">{t('projectsCategories.tabs.projects')}</Tabs.Tab>
-            <Tabs.Tab value="categories">{t('projectsCategories.tabs.categories')}</Tabs.Tab>
+          <Tabs.List
+            style={{
+              display: 'inline-flex',
+              backgroundColor: '#eceef2',
+              borderRadius: 8,
+              padding: 4,
+              gap: 4,
+            }}
+          >
+            <Tabs.Tab
+              value="projects"
+              style={{
+                borderRadius: 6,
+                padding: '6px 16px',
+                fontSize: '13.7px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                border: 'none',
+                transition: 'background-color 0.1s, color 0.1s',
+                backgroundColor: activeTab === 'projects' ? '#fff' : 'transparent',
+                color: activeTab === 'projects' ? '#0a0a0a' : '#717182',
+              }}
+            >
+              {t('projectsCategories.tabs.projects')}
+            </Tabs.Tab>
+            <Tabs.Tab
+              value="categories"
+              style={{
+                borderRadius: 6,
+                padding: '6px 16px',
+                fontSize: '13.7px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                border: 'none',
+                transition: 'background-color 0.1s, color 0.1s',
+                backgroundColor: activeTab === 'categories' ? '#fff' : 'transparent',
+                color: activeTab === 'categories' ? '#0a0a0a' : '#717182',
+              }}
+            >
+              {t('projectsCategories.tabs.categories')}
+            </Tabs.Tab>
           </Tabs.List>
           <Button
             leftSection={<IconPlus size={16} />}
