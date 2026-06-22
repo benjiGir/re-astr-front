@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { CreateCategoryDto, UpdateCategoryDto } from '../../types/api'
 import * as categoriesApi from '../services/categories.service'
 
 export const categoryKeys = {
@@ -24,5 +25,45 @@ export function useCategory(id: string) {
     queryKey: categoryKeys.detail(id),
     queryFn: () => categoriesApi.getCategoryById(id),
     enabled: !!id,
+  })
+}
+
+/**
+ * Create a category
+ */
+export function useCreateCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (dto: CreateCategoryDto) => categoriesApi.createCategory(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all })
+    },
+  })
+}
+
+/**
+ * Update a category
+ */
+export function useUpdateCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, dto }: { id: string; dto: UpdateCategoryDto }) =>
+      categoriesApi.updateCategory(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all })
+    },
+  })
+}
+
+/**
+ * Delete a category
+ */
+export function useDeleteCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => categoriesApi.deleteCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all })
+    },
   })
 }

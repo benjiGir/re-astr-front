@@ -1,8 +1,8 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import type { TestStatus } from '../../types/api'
+import * as testsApi from '../services/tests.service'
 import { useCategories } from './categories.queries'
 import { useProjects } from './projects.queries'
-import * as testsApi from '../services/tests.service'
 
 export interface TestFilters {
   categoryId?: string
@@ -26,6 +26,16 @@ export function useTestSearch(filters?: TestFilters) {
     queryKey: testKeys.search(filters),
     queryFn: () => testsApi.searchTests(filters ?? {}),
     placeholderData: keepPreviousData,
+  })
+}
+
+/**
+ * Get all tests
+ */
+export function useAllTests() {
+  return useQuery({
+    queryKey: testKeys.all,
+    queryFn: testsApi.getAllTests,
   })
 }
 
