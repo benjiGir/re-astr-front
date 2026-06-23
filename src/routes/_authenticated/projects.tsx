@@ -13,6 +13,7 @@ import {
 import { IconPlus, IconSearch } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { ConfirmDeleteModal } from '../../components/ProjectsCategories/ConfirmDeleteModal'
 import { EntityFormModal } from '../../components/ProjectsCategories/EntityFormModal'
 import { EntityGrid } from '../../components/ProjectsCategories/EntityGrid'
 import { type TabValue, useProjectsPage } from '../../hooks/useProjectsPage'
@@ -44,6 +45,11 @@ function ProjectsPage() {
     handleDeleteProject,
     handleDeleteCategory,
     handleSubmit,
+    deleteModalOpened,
+    deleteConfirmMessage,
+    isDeleting,
+    handleCancelDelete,
+    handleConfirmDelete,
   } = useProjectsPage()
 
   if (isLoading) {
@@ -172,6 +178,14 @@ function ProjectsPage() {
           onSubmit={handleSubmit}
         />
       )}
+
+      <ConfirmDeleteModal
+        opened={deleteModalOpened}
+        message={deleteConfirmMessage}
+        isDeleting={isDeleting}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </Stack>
   )
 }

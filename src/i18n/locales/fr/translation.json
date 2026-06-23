@@ -136,6 +136,7 @@
     "noProjects": "Aucun projet trouvé",
     "noCategories": "Aucune catégorie trouvée",
     "deleteConfirm": "Voulez-vous vraiment supprimer \"{{name}}\" ?",
+    "deleteConfirmTitle": "Confirmer la suppression",
     "form": {
       "name": "Nom",
       "namePlaceholder": "Ex: Système de Paiement",

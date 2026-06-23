@@ -19,6 +19,9 @@ export function useProjectsPage() {
   const [debouncedSearch] = useDebouncedValue(search, 300)
   const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false)
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<
+    { type: 'project'; entity: Project } | { type: 'category'; entity: Category } | null
+  >(null)
 
   const projects = useProjectsResource()
   const categories = useCategoriesResource()
@@ -71,15 +74,21 @@ export function useProjectsPage() {
   }
 
   const handleDeleteProject = (project: Project) => {
-    if (window.confirm(t('projectsCategories.deleteConfirm', { name: project.name }))) {
-      projects.remove.mutate(project.id)
-    }
+    setDeleteTarget({ type: 'project', entity: project })
   }
 
   const handleDeleteCategory = (category: Category) => {
-    if (window.confirm(t('projectsCategories.deleteConfirm', { name: category.name }))) {
-      categories.remove.mutate(category.id)
-    }
+    setDeleteTarget({ type: 'category', entity: category })
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteTarget(null)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return
+    const resource = deleteTarget.type === 'project' ? projects : categories
+    resource.remove.mutate(deleteTarget.entity.id, { onSuccess: () => setDeleteTarget(null) })
   }
 
   const handleSubmitProject = (values: EntityFormValues, entity: Entity | null) => {
@@ -113,6 +122,12 @@ export function useProjectsPage() {
   const isLoading = projects.query.isLoading || categories.query.isLoading
   const isError = projects.query.isError || categories.query.isError
 
+  const deleteModalOpened = !!deleteTarget
+  const deleteConfirmMessage = deleteTarget
+    ? t('projectsCategories.deleteConfirm', { name: deleteTarget.entity.name })
+    : ''
+  const isDeleting = projects.remove.isPending || categories.remove.isPending
+
   return {
     activeTab,
     setActiveTab,
@@ -136,5 +151,10 @@ export function useProjectsPage() {
     handleDeleteProject,
     handleDeleteCategory,
     handleSubmit,
+    deleteModalOpened,
+    deleteConfirmMessage,
+    isDeleting,
+    handleCancelDelete,
+    handleConfirmDelete,
   }
 }
