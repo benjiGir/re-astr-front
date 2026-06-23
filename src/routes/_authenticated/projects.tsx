@@ -162,14 +162,16 @@ function ProjectsPage() {
         </Tabs.Panel>
       </Tabs>
 
-      <EntityFormModal
-        opened={formOpened}
-        title={modalTitle}
-        initialValues={modalInitialValues}
-        isSubmitting={isSubmitting}
-        onClose={closeForm}
-        onSubmit={handleSubmit}
-      />
+      {formOpened && (
+        <EntityFormModal
+          opened={formOpened}
+          title={modalTitle}
+          initialValues={modalInitialValues}
+          isSubmitting={isSubmitting}
+          onClose={closeForm}
+          onSubmit={handleSubmit}
+        />
+      )}
     </Stack>
   )
 }

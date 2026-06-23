@@ -1,6 +1,5 @@
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 export interface EntityFormValues {
@@ -26,34 +25,31 @@ export function EntityFormModal({
   onSubmit,
 }: EntityFormModalProps) {
   const { t } = useTranslation()
-  const form = useForm<EntityFormValues>({
-    initialValues,
-    validate: {
-      name: (value) => (value.trim().length === 0 ? t('common:validation.required') : null),
-    },
-  })
-
-  useEffect(() => {
-    if (opened) {
-      form.setValues(initialValues)
-    }
-  }, [opened, initialValues, form.setValues])
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EntityFormValues>({ defaultValues: initialValues })
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
-      <form onSubmit={form.onSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap="md">
           <TextInput
             label={t('projectsCategories.form.name')}
             placeholder={t('projectsCategories.form.namePlaceholder')}
             required
-            {...form.getInputProps('name')}
+            error={errors.name?.message}
+            {...register('name', {
+              validate: (value) =>
+                value.trim().length === 0 ? t('common:validation.required') : true,
+            })}
           />
           <Textarea
             label={t('projectsCategories.form.description')}
             placeholder={t('projectsCategories.form.descriptionPlaceholder')}
             minRows={3}
-            {...form.getInputProps('description')}
+            {...register('description')}
           />
           <Group justify="flex-end">
             <Button variant="outline" color="gray" onClick={onClose}>
