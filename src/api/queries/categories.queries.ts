@@ -67,3 +67,15 @@ export function useDeleteCategory() {
     },
   })
 }
+
+/**
+ * Combined query + mutations for managing the categories list
+ */
+export function useCategoriesResource() {
+  return {
+    query: useCategories(),
+    create: useCreateCategory(),
+    update: useUpdateCategory(),
+    remove: useDeleteCategory(),
+  }
+}

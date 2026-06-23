@@ -67,3 +67,15 @@ export function useDeleteProject() {
     },
   })
 }
+
+/**
+ * Combined query + mutations for managing the projects list
+ */
+export function useProjectsResource() {
+  return {
+    query: useProjects(),
+    create: useCreateProject(),
+    update: useUpdateProject(),
+    remove: useDeleteProject(),
+  }
+}

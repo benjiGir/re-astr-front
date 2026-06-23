@@ -16,18 +16,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import type { TFunction } from 'i18next'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  useCategories,
-  useCreateCategory,
-  useDeleteCategory,
-  useUpdateCategory,
-} from '../../api/queries/categories.queries'
-import {
-  useCreateProject,
-  useDeleteProject,
-  useProjects,
-  useUpdateProject,
-} from '../../api/queries/projects.queries'
+import { useCategoriesResource } from '../../api/queries/categories.queries'
+import { useProjectsResource } from '../../api/queries/projects.queries'
 import { useAllTests } from '../../api/queries/tests.queries'
 import {
   EntityFormModal,
@@ -64,16 +54,9 @@ function ProjectsPage() {
   const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false)
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null)
 
-  const projectsQuery = useProjects()
-  const categoriesQuery = useCategories()
+  const projects = useProjectsResource()
+  const categories = useCategoriesResource()
   const testsQuery = useAllTests()
-
-  const createProject = useCreateProject()
-  const updateProject = useUpdateProject()
-  const deleteProject = useDeleteProject()
-  const createCategory = useCreateCategory()
-  const updateCategory = useUpdateCategory()
-  const deleteCategory = useDeleteCategory()
 
   const projectArchiveCount = (id: string) =>
     testsQuery.data?.filter((test) => test.projectId === id).length ?? 0
@@ -82,17 +65,17 @@ function ProjectsPage() {
 
   const filteredProjects = useMemo(() => {
     const query = debouncedSearch.trim().toLowerCase()
-    return (projectsQuery.data ?? []).filter((project) =>
+    return (projects.query.data ?? []).filter((project) =>
       project.name.toLowerCase().includes(query),
     )
-  }, [projectsQuery.data, debouncedSearch])
+  }, [projects.query.data, debouncedSearch])
 
   const filteredCategories = useMemo(() => {
     const query = debouncedSearch.trim().toLowerCase()
-    return (categoriesQuery.data ?? []).filter((category) =>
+    return (categories.query.data ?? []).filter((category) =>
       category.name.toLowerCase().includes(query),
     )
-  }, [categoriesQuery.data, debouncedSearch])
+  }, [categories.query.data, debouncedSearch])
 
   const modalInitialValues = useMemo(
     () =>
@@ -114,32 +97,32 @@ function ProjectsPage() {
 
   const handleDeleteProject = (project: Project) => {
     if (window.confirm(t('projectsCategories.deleteConfirm', { name: project.name }))) {
-      deleteProject.mutate(project.id)
+      projects.remove.mutate(project.id)
     }
   }
 
   const handleDeleteCategory = (category: Category) => {
     if (window.confirm(t('projectsCategories.deleteConfirm', { name: category.name }))) {
-      deleteCategory.mutate(category.id)
+      categories.remove.mutate(category.id)
     }
   }
 
   const handleSubmitProject = (values: EntityFormValues, entity: Entity | null) => {
     const dto = { name: values.name, description: values.description || undefined }
     if (entity) {
-      updateProject.mutate({ id: entity.id, dto }, { onSuccess: closeForm })
+      projects.update.mutate({ id: entity.id, dto }, { onSuccess: closeForm })
       return
     }
-    createProject.mutate(dto, { onSuccess: closeForm })
+    projects.create.mutate(dto, { onSuccess: closeForm })
   }
 
   const handleSubmitCategory = (values: EntityFormValues, entity: Entity | null) => {
     const dto = { name: values.name, description: values.description || undefined }
     if (entity) {
-      updateCategory.mutate({ id: entity.id, dto }, { onSuccess: closeForm })
+      categories.update.mutate({ id: entity.id, dto }, { onSuccess: closeForm })
       return
     }
-    createCategory.mutate({ ...dto, baseSchema: { fields: [] } }, { onSuccess: closeForm })
+    categories.create.mutate({ ...dto, baseSchema: { fields: [] } }, { onSuccess: closeForm })
   }
 
   const handleSubmit = (values: EntityFormValues) => {
@@ -148,12 +131,12 @@ function ProjectsPage() {
   }
 
   const isSubmitting =
-    createProject.isPending ||
-    updateProject.isPending ||
-    createCategory.isPending ||
-    updateCategory.isPending
-  const isLoading = projectsQuery.isLoading || categoriesQuery.isLoading
-  const isError = projectsQuery.isError || categoriesQuery.isError
+    projects.create.isPending ||
+    projects.update.isPending ||
+    categories.create.isPending ||
+    categories.update.isPending
+  const isLoading = projects.query.isLoading || categories.query.isLoading
+  const isError = projects.query.isError || categories.query.isError
 
   if (isLoading) {
     return (
