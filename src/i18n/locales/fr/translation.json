@@ -117,6 +117,37 @@
     "high": "Haute",
     "critical": "Critique"
   },
+  "projectsCategories": {
+    "title": "Gestion des Projets et Catégories",
+    "subtitle": "Organisez vos archives avec des projets et catégories",
+    "searchPlaceholder": "Rechercher un projet ou une catégorie...",
+    "tabs": {
+      "projects": "Projets",
+      "categories": "Catégories"
+    },
+    "newProject": "Nouveau Projet",
+    "newCategory": "Nouvelle Catégorie",
+    "editProject": "Modifier le Projet",
+    "editCategory": "Modifier la Catégorie",
+    "archives": "Archives",
+    "status": "Statut",
+    "statusActive": "Actif",
+    "createdAt": "Créé le",
+    "noProjects": "Aucun projet trouvé",
+    "noCategories": "Aucune catégorie trouvée",
+    "deleteConfirm": "Voulez-vous vraiment supprimer \"{{name}}\" ?",
+    "deleteConfirmTitle": "Confirmer la suppression",
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "Ex: Système de Paiement",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez ce projet ou cette catégorie"
+    },
+    "error": {
+      "title": "Erreur",
+      "message": "Une erreur est survenue lors du chargement des projets et catégories"
+    }
+  },
   "search": {
     "title": "Recherche d'Archives",
     "subtitle": "Trouvez rapidement vos archives de tests avec les filtres avancés",
