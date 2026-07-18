@@ -11,15 +11,13 @@ import {
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { useTranslation } from 'react-i18next'
-import useUserStore from '../stores/userStore.tsx'
-import {useSignOut} from "../auth/hooks.ts";
-
+import { useSignOut } from '../auth/auth.queries'
 
 const AuthenticatedLayout = () => {
   const { t } = useTranslation()
-    const routerState = useRouterState()
-    const currentPath = routerState.location.pathname
-    const {mutate: signOut, isPending} = useSignOut()
+  const routerState = useRouterState()
+  const currentPath = routerState.location.pathname
+  const { mutate: signOut, isPending } = useSignOut()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
 
   return (
@@ -34,12 +32,7 @@ const AuthenticatedLayout = () => {
     >
       <AppShell.Header>
         <Group h="100%" px="md">
-          <Burger
-            opened={mobileOpened}
-            onClick={toggleMobile}
-            hiddenFrom="sm"
-            size="sm"
-          />
+          <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
           <Group gap={8}>
             <IconArchive size={24} />
             <Text fw={600} size="md">
@@ -147,9 +140,8 @@ const AuthenticatedLayout = () => {
         {/* Navbar Footer */}
         <AppShell.Section p="md">
           <UnstyledButton
-            onClick={() => {
-              signOut().then(() => logout())
-            }}
+            onClick={() => signOut()}
+            disabled={isPending}
             style={{
               width: '100%',
               padding: '10px 12px',

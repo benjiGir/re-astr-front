@@ -12,7 +12,7 @@ import {
 import { useForm } from '@mantine/form'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useSignIn } from '../auth/hooks.ts'
+import { useSignIn } from '../auth/auth.queries'
 
 export const Route = createFileRoute('/login')({
   component: Signin,

@@ -1,17 +1,25 @@
-import {createFileRoute} from '@tanstack/react-router'
-import {Alert, Button, Container, Flex, Paper, PasswordInput, Stack, Text, TextInput} from "@mantine/core";
-import {IconAlertCircle} from "@tabler/icons-react";
-import {useState} from "react";
-import {useForm} from "@mantine/form";
-import {signUp} from "../auth/auth.service.ts";
+import {
+  Alert,
+  Button,
+  Container,
+  Flex,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { createFileRoute } from '@tanstack/react-router'
+import { useSignUp } from '../auth/auth.queries'
 
 export const Route = createFileRoute('/signup')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const { mutate: signUp, isPending, error } = useSignUp()
 
   const form = useForm({
     initialValues: {
@@ -21,7 +29,7 @@ function RouteComponent() {
       name: '',
     },
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email '), // Regex trop permissive, mettre en parallèle avec le back
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email '),
       password: (value) => (value.length < 6 ? 'Password need at least 6 characters ' : null),
       confirmPassword: (value, values) =>
         value === values.password ? null : "Password don't match. ",
@@ -33,27 +41,12 @@ function RouteComponent() {
     },
   })
 
-  const handleSubmit = async (values: typeof form.values) => {
-    setLoading(true)
-    setError('')
-
-    const handleSubmit = async (values: typeof form.values) => {
-        setLoading(true)
-        setError('')
-
-        try {
-            await signUp({
-                email: values.email,
-                password: values.password,
-                name: values.name,
-                callbackURL: '/signin',
-            })
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'error signIn')
-        } finally {
-            setLoading(false)
-        }
-    }
+  const handleSubmit = (values: typeof form.values) => {
+    signUp({
+      email: values.email,
+      password: values.password,
+      name: values.name,
+    })
   }
 
   return (
@@ -69,7 +62,7 @@ function RouteComponent() {
               <form id="formgroup-legend-id" onSubmit={form.onSubmit(handleSubmit)}>
                 {error && (
                   <Alert icon={<IconAlertCircle size={16} />} title="Erreur" color="red">
-                    {error}
+                    {error.message}
                   </Alert>
                 )}
                 <Stack gap="md">
@@ -105,7 +98,13 @@ function RouteComponent() {
                     {...form.getInputProps('confirmPassword')}
                     placeholder="••••••••"
                   />
-                  <Button type="submit" bg={'dark'} radius="md" fullWidth={true} loading={loading}>
+                  <Button
+                    type="submit"
+                    bg={'dark'}
+                    radius="md"
+                    fullWidth={true}
+                    loading={isPending}
+                  >
                     Se connecter
                   </Button>
                 </Stack>

@@ -1,31 +1,52 @@
-import {QueryClient, queryOptions} from "@tanstack/react-query";
-import {getSession, signIn,signOut} from "./auth.service.ts";
-import {SignInParams, UserInfo} from "../types/authTypes.ts";
-import {Data} from "../types/types.ts";
-
+import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import type { SignInDto, SignUpDto } from '../types/api'
+import * as authApi from './auth.service'
 
 export const userQueryKey = ['user']
 
 export const userQueryOptions = queryOptions({
-    queryKey: userQueryKey,
-    queryFn: async () => {
-        const session = await getSession();
-        return session?.data?.user ?? null
-    }
-});
+  queryKey: userQueryKey,
+  queryFn: authApi.getCurrentUser,
+})
 
-export const signInMutation = {
-    mutationFn: signIn,
-    onSuccess: async (response : Data<UserInfo>, _params: SignInParams, ctx: {
-        queryClient: QueryClient
-    } | undefined) => {
-        await ctx?.queryClient?.setQueryData(userQueryKey, response)
-    }
-};
+export function useCurrentUser() {
+  const { data, ...rest } = useQuery(userQueryOptions)
+  return { user: data, ...rest }
+}
 
-export const signOutMutation = {
-    mutationFn: signOut,
-    onSuccess: async (ctx: {
-        queryClient: QueryClient
-    } | undefined) => ctx?.queryClient?.removeQueries({queryKey: userQueryKey}),
+export function useSignIn() {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  return useMutation({
+    mutationFn: (dto: SignInDto) => authApi.signIn(dto),
+    onSuccess: ({ user }) => {
+      queryClient.setQueryData(userQueryKey, user)
+      navigate({ to: '/dashboard' })
+    },
+  })
+}
+
+export function useSignUp() {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  return useMutation({
+    mutationFn: (dto: SignUpDto) => authApi.signUp(dto),
+    onSuccess: ({ user }) => {
+      queryClient.setQueryData(userQueryKey, user)
+      navigate({ to: '/dashboard' })
+    },
+  })
+}
+
+export function useSignOut() {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  return useMutation({
+    mutationFn: authApi.signOut,
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: userQueryKey })
+      navigate({ to: '/login' })
+    },
+  })
 }
