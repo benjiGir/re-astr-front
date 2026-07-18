@@ -48,6 +48,7 @@ function ProjectsPage() {
     deleteModalOpened,
     deleteConfirmMessage,
     isDeleting,
+    deleteError,
     handleCancelDelete,
     handleConfirmDelete,
   } = useProjectsPage()
@@ -183,6 +184,7 @@ function ProjectsPage() {
         opened={deleteModalOpened}
         message={deleteConfirmMessage}
         isDeleting={isDeleting}
+        error={deleteError}
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
       />

@@ -35,7 +35,7 @@ export function useTestSearch(filters?: TestFilters) {
 export function useAllTests() {
   return useQuery({
     queryKey: testKeys.all,
-    queryFn: testsApi.getAllTests,
+    queryFn: () => testsApi.getAllTests(),
   })
 }
 

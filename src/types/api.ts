@@ -173,7 +173,7 @@ export interface CreateTestDto {
   categoryId: string
   name: string
   description?: string
-  status?: TestStatus
+  status?: 'draft' | 'in_progress' | 'completed' | 'failed'
   commonData: Record<string, any>
   customData?: Record<string, any>
   metadata?: Record<string, any>
@@ -191,9 +191,22 @@ export interface UpdateTestDto {
 // ============================================
 // Error Types
 // ============================================
+// Effect backend errors are `_tag`-discriminated rather than a single
+// generic envelope. Business errors carry extra fields (id, name, ...);
+// framework errors (Forbidden, Unauthorized, Conflict, ...) carry only `_tag`.
 
-export interface ErrorResponse {
-  statusCode: number
-  message: string | string[]
-  error?: string
+export interface ValidationFieldError {
+  field: string
+  message: string
+}
+
+export interface ValidationFailedError {
+  _tag: 'ValidationFailed'
+  context: string
+  errors: ValidationFieldError[]
+}
+
+export interface ApiErrorBody {
+  _tag: string
+  [key: string]: unknown
 }

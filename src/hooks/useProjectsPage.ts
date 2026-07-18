@@ -1,6 +1,7 @@
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ApiError } from '../api/http'
 import { useCategoriesResource } from '../api/queries/categories.queries'
 import { useProjectsResource } from '../api/queries/projects.queries'
 import { useAllTests } from '../api/queries/tests.queries'
@@ -22,6 +23,7 @@ export function useProjectsPage() {
   const [deleteTarget, setDeleteTarget] = useState<
     { type: 'project'; entity: Project } | { type: 'category'; entity: Category } | null
   >(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const projects = useProjectsResource()
   const categories = useCategoriesResource()
@@ -83,12 +85,26 @@ export function useProjectsPage() {
 
   const handleCancelDelete = () => {
     setDeleteTarget(null)
+    setDeleteError(null)
   }
 
   const handleConfirmDelete = () => {
     if (!deleteTarget) return
     const resource = deleteTarget.type === 'project' ? projects : categories
-    resource.remove.mutate(deleteTarget.entity.id, { onSuccess: () => setDeleteTarget(null) })
+    setDeleteError(null)
+    resource.remove.mutate(deleteTarget.entity.id, {
+      onSuccess: () => setDeleteTarget(null),
+      onError: (error) => {
+        const hasTests =
+          error instanceof ApiError &&
+          (error.tag === 'ProjectHasTests' || error.tag === 'CategoryHasTests')
+        setDeleteError(
+          hasTests
+            ? t('projectsCategories.deleteError.hasTests')
+            : t('projectsCategories.deleteError.generic'),
+        )
+      },
+    })
   }
 
   const handleSubmitProject = (values: EntityFormValues, entity: Entity | null) => {
@@ -151,6 +167,7 @@ export function useProjectsPage() {
     handleDeleteProject,
     handleDeleteCategory,
     handleSubmit,
+    deleteError,
     deleteModalOpened,
     deleteConfirmMessage,
     isDeleting,
