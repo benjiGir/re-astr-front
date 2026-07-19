@@ -1,12 +1,12 @@
 import type { Category, CreateCategoryDto, UpdateCategoryDto } from '../../types/api'
 import { apiFetch } from '../http'
 
-export async function getAllCategories(): Promise<Category[]> {
-  return apiFetch<Category[]>('/categories')
+export async function getAllCategories(signal?: AbortSignal): Promise<Category[]> {
+  return apiFetch<Category[]>('/categories', { signal })
 }
 
-export async function getCategoryById(id: string): Promise<Category> {
-  return apiFetch<Category>(`/categories/${id}`)
+export async function getCategoryById(id: string, signal?: AbortSignal): Promise<Category> {
+  return apiFetch<Category>(`/categories/${id}`, { signal })
 }
 
 export async function createCategory(dto: CreateCategoryDto): Promise<Category> {

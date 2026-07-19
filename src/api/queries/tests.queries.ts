@@ -1,8 +1,9 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import type { TestStatus } from '../../types/api'
 import * as testsApi from '../services/tests.service'
-import { useCategories } from './categories.queries'
-import { useProjects } from './projects.queries'
+import { categoriesOptions } from './categories.queries'
+import { projectsOptions } from './projects.queries'
 
 export interface TestFilters {
   categoryId?: string
@@ -14,49 +15,28 @@ export interface TestFilters {
 export const testKeys = {
   all: ['tests'] as const,
   search: (filters?: TestFilters) => ['tests', 'search', filters ?? {}] as const,
-  detail: (id: string) => ['tests', id] as const,
   recent: (limit: number) => ['tests', 'recent', { limit }] as const,
 }
 
-/**
- * Search tests (optionally filtered by category, project, status, and/or free text)
- */
-export function useTestSearch(filters?: TestFilters) {
-  return useQuery({
+export function testSearchOptions(filters?: TestFilters) {
+  return queryOptions({
     queryKey: testKeys.search(filters),
-    queryFn: () => testsApi.searchTests(filters ?? {}),
+    queryFn: ({ signal }) => testsApi.searchTests(filters ?? {}, signal),
     placeholderData: keepPreviousData,
   })
 }
 
-/**
- * Get all tests
- */
-export function useAllTests() {
-  return useQuery({
+export function allTestsOptions() {
+  return queryOptions({
     queryKey: testKeys.all,
-    queryFn: () => testsApi.getAllTests(),
+    queryFn: ({ signal }) => testsApi.getAllTests(undefined, signal),
   })
 }
 
-/**
- * Get test by ID
- */
-export function useTest(id: string) {
-  return useQuery({
-    queryKey: testKeys.detail(id),
-    queryFn: () => testsApi.getTestById(id),
-    enabled: !!id,
-  })
-}
-
-/**
- * Get recent tests
- */
-export function useRecentTests(limit = 4) {
-  return useQuery({
+export function recentTestsOptions(limit = 4) {
+  return queryOptions({
     queryKey: testKeys.recent(limit),
-    queryFn: () => testsApi.getRecentTests(limit),
+    queryFn: ({ signal }) => testsApi.getRecentTests(limit, signal),
   })
 }
 
@@ -65,20 +45,24 @@ export function useRecentTests(limit = 4) {
  * for the archive search page
  */
 export function useArchiveSearchData(filters?: TestFilters) {
-  const testsQuery = useTestSearch(filters)
-  const projectsQuery = useProjects()
-  const categoriesQuery = useCategories()
+  const testsQuery = useQuery(testSearchOptions(filters))
+  const projectsQuery = useQuery(projectsOptions())
+  const categoriesQuery = useQuery(categoriesOptions())
 
-  const tests = testsQuery.data?.map((test) => {
-    const project = projectsQuery.data?.find((p) => p.id === test.projectId)
-    const category = categoriesQuery.data?.find((c) => c.id === test.categoryId)
-    return {
-      ...test,
-      projectName: project?.name || test.projectId,
-      categoryName: category?.name || test.categoryId,
-      authorName: test.createdByName || test.metadata?.author || test.createdBy,
-    }
-  })
+  const tests = useMemo(
+    () =>
+      testsQuery.data?.map((test) => {
+        const project = projectsQuery.data?.find((p) => p.id === test.projectId)
+        const category = categoriesQuery.data?.find((c) => c.id === test.categoryId)
+        return {
+          ...test,
+          projectName: project?.name || test.projectId,
+          categoryName: category?.name || test.categoryId,
+          authorName: test.createdByName || test.metadata?.author || test.createdBy,
+        }
+      }),
+    [testsQuery.data, projectsQuery.data, categoriesQuery.data],
+  )
 
   return {
     tests,

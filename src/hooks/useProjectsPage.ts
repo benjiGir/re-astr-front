@@ -1,10 +1,11 @@
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ApiError } from '../api/http'
 import { useCategoriesResource } from '../api/queries/categories.queries'
 import { useProjectsResource } from '../api/queries/projects.queries'
-import { useAllTests } from '../api/queries/tests.queries'
+import { allTestsOptions } from '../api/queries/tests.queries'
 import type { EntityFormValues } from '../components/ProjectsCategories/EntityFormModal'
 import type { Category, Project } from '../types/api'
 
@@ -18,16 +19,28 @@ export function useProjectsPage() {
   const [activeTab, setActiveTab] = useState<TabValue>('projects')
   const [search, setSearch] = useState('')
   const [debouncedSearch] = useDebouncedValue(search, 300)
-  const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false)
+  const [formOpened, { open: openForm, close: closeFormDisclosure }] = useDisclosure(false)
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<
     { type: 'project'; entity: Project } | { type: 'category'; entity: Category } | null
   >(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+
+  const closeForm = () => {
+    setFormError(null)
+    closeFormDisclosure()
+  }
+
+  const handleFormError = (error: unknown) => {
+    setFormError(
+      error instanceof ApiError ? error.message : t('projectsCategories.formError.generic'),
+    )
+  }
 
   const projects = useProjectsResource()
   const categories = useCategoriesResource()
-  const testsQuery = useAllTests()
+  const testsQuery = useQuery(allTestsOptions())
 
   const projectArchiveCount = (id: string) =>
     testsQuery.data?.filter((test) => test.projectId === id).length ?? 0
@@ -109,20 +122,31 @@ export function useProjectsPage() {
 
   const handleSubmitProject = (values: EntityFormValues, entity: Entity | null) => {
     const dto = { name: values.name, description: values.description || undefined }
+    setFormError(null)
     if (entity) {
-      projects.update.mutate({ id: entity.id, dto }, { onSuccess: closeForm })
+      projects.update.mutate(
+        { id: entity.id, dto },
+        { onSuccess: closeForm, onError: handleFormError },
+      )
       return
     }
-    projects.create.mutate(dto, { onSuccess: closeForm })
+    projects.create.mutate(dto, { onSuccess: closeForm, onError: handleFormError })
   }
 
   const handleSubmitCategory = (values: EntityFormValues, entity: Entity | null) => {
     const dto = { name: values.name, description: values.description || undefined }
+    setFormError(null)
     if (entity) {
-      categories.update.mutate({ id: entity.id, dto }, { onSuccess: closeForm })
+      categories.update.mutate(
+        { id: entity.id, dto },
+        { onSuccess: closeForm, onError: handleFormError },
+      )
       return
     }
-    categories.create.mutate({ ...dto, baseSchema: { fields: [] } }, { onSuccess: closeForm })
+    categories.create.mutate(
+      { ...dto, baseSchema: { fields: [] } },
+      { onSuccess: closeForm, onError: handleFormError },
+    )
   }
 
   const handleSubmit = (values: EntityFormValues) => {
@@ -156,6 +180,7 @@ export function useProjectsPage() {
     isLoading,
     isError,
     isSubmitting,
+    formError,
     filteredProjects,
     filteredCategories,
     projectArchiveCount,

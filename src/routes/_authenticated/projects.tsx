@@ -34,6 +34,7 @@ function ProjectsPage() {
     isLoading,
     isError,
     isSubmitting,
+    formError,
     filteredProjects,
     filteredCategories,
     projectArchiveCount,
@@ -175,6 +176,7 @@ function ProjectsPage() {
           title={modalTitle}
           initialValues={modalInitialValues}
           isSubmitting={isSubmitting}
+          error={formError}
           onClose={closeForm}
           onSubmit={handleSubmit}
         />

@@ -1,12 +1,12 @@
 import type { CreateProjectDto, Project, UpdateProjectDto } from '../../types/api'
 import { apiFetch } from '../http'
 
-export async function getAllProjects(): Promise<Project[]> {
-  return apiFetch<Project[]>('/projects')
+export async function getAllProjects(signal?: AbortSignal): Promise<Project[]> {
+  return apiFetch<Project[]>('/projects', { signal })
 }
 
-export async function getProjectById(id: string): Promise<Project> {
-  return apiFetch<Project>(`/projects/${id}`)
+export async function getProjectById(id: string, signal?: AbortSignal): Promise<Project> {
+  return apiFetch<Project>(`/projects/${id}`, { signal })
 }
 
 export async function createProject(dto: CreateProjectDto): Promise<Project> {

@@ -1,19 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
-import { useCategories } from './categories.queries'
+import { queryOptions, useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import * as dashboardApi from '../services/dashboard.service'
-import { useRecentTests } from './tests.queries'
+import { categoriesOptions } from './categories.queries'
+import { recentTestsOptions } from './tests.queries'
 
 export const dashboardKeys = {
   stats: ['dashboard', 'stats'] as const,
 }
 
-/**
- * Get dashboard statistics
- */
-export function useDashboardStats() {
-  return useQuery({
+export function dashboardStatsOptions() {
+  return queryOptions({
     queryKey: dashboardKeys.stats,
-    queryFn: dashboardApi.getDashboardStats,
+    queryFn: ({ signal }) => dashboardApi.getDashboardStats(signal),
   })
 }
 
@@ -22,21 +20,25 @@ export function useDashboardStats() {
  * This hook combines multiple queries and enriches tests with category names
  */
 export function useDashboardData() {
-  const statsQuery = useDashboardStats()
-  const recentTestsQuery = useRecentTests(4)
-  const categoriesQuery = useCategories()
+  const statsQuery = useQuery(dashboardStatsOptions())
+  const recentTestsQuery = useQuery(recentTestsOptions(4))
+  const categoriesQuery = useQuery(categoriesOptions())
 
-  // Enrich tests with category names
-  const enrichedTests = recentTestsQuery.data?.map((test) => {
-    const category = categoriesQuery.data?.find((c) => c.id === test.categoryId)
-    return {
-      ...test,
-      metadata: {
-        ...test.metadata,
-        categoryName: category?.name || test.categoryId,
-      },
-    }
-  })
+  // Enrich tests with category names; memoized so unrelated re-renders don't re-scan the list
+  const enrichedTests = useMemo(
+    () =>
+      recentTestsQuery.data?.map((test) => {
+        const category = categoriesQuery.data?.find((c) => c.id === test.categoryId)
+        return {
+          ...test,
+          metadata: {
+            ...test.metadata,
+            categoryName: category?.name || test.categoryId,
+          },
+        }
+      }),
+    [recentTestsQuery.data, categoriesQuery.data],
+  )
 
   return {
     stats: statsQuery.data,

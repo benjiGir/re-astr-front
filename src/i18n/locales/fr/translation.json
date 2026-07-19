@@ -150,6 +150,9 @@
     "deleteError": {
       "hasTests": "Impossible de supprimer : des tests sont associés à cet élément.",
       "generic": "Une erreur est survenue lors de la suppression."
+    },
+    "formError": {
+      "generic": "Une erreur est survenue lors de l'enregistrement."
     }
   },
   "search": {

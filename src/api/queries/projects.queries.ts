@@ -1,70 +1,108 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { CreateProjectDto, UpdateProjectDto } from '../../types/api'
+import type { QueryClient } from '@tanstack/react-query'
+import {
+  mutationOptions,
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+import type { CreateProjectDto, Project, UpdateProjectDto } from '../../types/api'
 import * as projectsApi from '../services/projects.service'
+
+const REFERENCE_DATA_STALE_TIME = 10 * 60 * 1000
 
 export const projectKeys = {
   all: ['projects'] as const,
   detail: (id: string) => ['projects', id] as const,
 }
 
-/**
- * Get all projects
- */
-export function useProjects() {
-  return useQuery({
+export function projectsOptions() {
+  return queryOptions({
     queryKey: projectKeys.all,
-    queryFn: projectsApi.getAllProjects,
+    queryFn: ({ signal }) => projectsApi.getAllProjects(signal),
+    staleTime: REFERENCE_DATA_STALE_TIME,
   })
 }
 
-/**
- * Get project by ID
- */
-export function useProject(id: string) {
-  return useQuery({
+export function projectOptions(id: string) {
+  return queryOptions({
     queryKey: projectKeys.detail(id),
-    queryFn: () => projectsApi.getProjectById(id),
+    queryFn: ({ signal }) => projectsApi.getProjectById(id, signal),
     enabled: !!id,
+    staleTime: REFERENCE_DATA_STALE_TIME,
   })
 }
 
-/**
- * Create a project
- */
-export function useCreateProject() {
-  const queryClient = useQueryClient()
-  return useMutation({
+function invalidateProjects(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({ queryKey: projectKeys.all })
+}
+
+interface ProjectsRollback {
+  previous?: Project[]
+}
+
+function createProjectMutation(queryClient: QueryClient) {
+  return mutationOptions({
     mutationFn: (dto: CreateProjectDto) => projectsApi.createProject(dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: projectKeys.all })
+    onMutate: async (dto): Promise<ProjectsRollback> => {
+      await queryClient.cancelQueries({ queryKey: projectKeys.all })
+      const previous = queryClient.getQueryData<Project[]>(projectKeys.all)
+      const optimisticProject: Project = {
+        id: `temp-${Date.now()}`,
+        name: dto.name,
+        description: dto.description,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      queryClient.setQueryData<Project[]>(projectKeys.all, (old) => [
+        ...(old ?? []),
+        optimisticProject,
+      ])
+      return { previous }
     },
+    onError: (_error, _dto, context) => {
+      if (context?.previous) queryClient.setQueryData(projectKeys.all, context.previous)
+    },
+    onSettled: () => invalidateProjects(queryClient),
   })
 }
 
-/**
- * Update a project
- */
-export function useUpdateProject() {
-  const queryClient = useQueryClient()
-  return useMutation({
+function updateProjectMutation(queryClient: QueryClient) {
+  return mutationOptions({
     mutationFn: ({ id, dto }: { id: string; dto: UpdateProjectDto }) =>
       projectsApi.updateProject(id, dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: projectKeys.all })
+    onMutate: async ({ id, dto }): Promise<ProjectsRollback> => {
+      await queryClient.cancelQueries({ queryKey: projectKeys.all })
+      const previous = queryClient.getQueryData<Project[]>(projectKeys.all)
+      queryClient.setQueryData<Project[]>(projectKeys.all, (old) =>
+        old?.map((project) =>
+          project.id === id ? { ...project, ...dto, updatedAt: new Date() } : project,
+        ),
+      )
+      return { previous }
     },
+    onError: (_error, _vars, context) => {
+      if (context?.previous) queryClient.setQueryData(projectKeys.all, context.previous)
+    },
+    onSettled: () => invalidateProjects(queryClient),
   })
 }
 
-/**
- * Delete a project
- */
-export function useDeleteProject() {
-  const queryClient = useQueryClient()
-  return useMutation({
+function deleteProjectMutation(queryClient: QueryClient) {
+  return mutationOptions({
     mutationFn: (id: string) => projectsApi.deleteProject(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: projectKeys.all })
+    onMutate: async (id): Promise<ProjectsRollback> => {
+      await queryClient.cancelQueries({ queryKey: projectKeys.all })
+      const previous = queryClient.getQueryData<Project[]>(projectKeys.all)
+      queryClient.setQueryData<Project[]>(projectKeys.all, (old) =>
+        old?.filter((project) => project.id !== id),
+      )
+      return { previous }
     },
+    onError: (_error, _id, context) => {
+      if (context?.previous) queryClient.setQueryData(projectKeys.all, context.previous)
+    },
+    onSettled: () => invalidateProjects(queryClient),
   })
 }
 
@@ -72,10 +110,11 @@ export function useDeleteProject() {
  * Combined query + mutations for managing the projects list
  */
 export function useProjectsResource() {
+  const queryClient = useQueryClient()
   return {
-    query: useProjects(),
-    create: useCreateProject(),
-    update: useUpdateProject(),
-    remove: useDeleteProject(),
+    query: useQuery(projectsOptions()),
+    create: useMutation(createProjectMutation(queryClient)),
+    update: useMutation(updateProjectMutation(queryClient)),
+    remove: useMutation(deleteProjectMutation(queryClient)),
   }
 }

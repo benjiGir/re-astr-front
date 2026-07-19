@@ -12,11 +12,8 @@ export interface DashboardStats {
 /**
  * Calculate dashboard statistics from tests, projects, and categories
  */
-export async function getDashboardStats(): Promise<DashboardStats> {
-  const [tests] = await Promise.all([
-    getAllTests(),
-    getAllProjects(),
-  ])
+export async function getDashboardStats(signal?: AbortSignal): Promise<DashboardStats> {
+  const [tests] = await Promise.all([getAllTests(undefined, signal), getAllProjects(signal)])
 
   // Total number of tests
   const totalTests = tests.length
@@ -24,13 +21,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   // Tests created this month
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const testsThisMonth = tests.filter(test => {
+  const testsThisMonth = tests.filter((test) => {
     const createdAt = new Date(test.createdAt)
     return createdAt >= startOfMonth
   }).length
 
   // Active projects (projects that have at least one test)
-  const projectsWithTests = new Set(tests.map(test => test.projectId))
+  const projectsWithTests = new Set(tests.map((test) => test.projectId))
   const activeProjects = projectsWithTests.size
 
   // Calculate total size from test.metadata.fileSize

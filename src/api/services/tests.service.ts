@@ -1,9 +1,9 @@
 import type { Test, TestStatus } from '../../types/api'
 import { apiFetch } from '../http'
 
-export async function getAllTests(categoryId?: string): Promise<Test[]> {
+export async function getAllTests(categoryId?: string, signal?: AbortSignal): Promise<Test[]> {
   const query = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : ''
-  return apiFetch<Test[]>(`/tests${query}`)
+  return apiFetch<Test[]>(`/tests${query}`, { signal })
 }
 
 export interface TestSearchFilters {
@@ -17,8 +17,11 @@ export interface TestSearchFilters {
  * The backend only supports filtering by categoryId (GET /tests?categoryId=),
  * so projectId/status/search are applied client-side on top of that result.
  */
-export async function searchTests(filters: TestSearchFilters): Promise<Test[]> {
-  const tests = await getAllTests(filters.categoryId)
+export async function searchTests(
+  filters: TestSearchFilters,
+  signal?: AbortSignal,
+): Promise<Test[]> {
+  const tests = await getAllTests(filters.categoryId, signal)
 
   return tests.filter((test) => {
     if (filters.projectId && test.projectId !== filters.projectId) {
@@ -39,15 +42,15 @@ export async function searchTests(filters: TestSearchFilters): Promise<Test[]> {
   })
 }
 
-export async function getTestById(id: string): Promise<Test> {
-  return apiFetch<Test>(`/tests/${id}`)
+export async function getTestById(id: string, signal?: AbortSignal): Promise<Test> {
+  return apiFetch<Test>(`/tests/${id}`, { signal })
 }
 
 /**
  * Get recent tests sorted by creation date
  */
-export async function getRecentTests(limit = 4): Promise<Test[]> {
-  const tests = await getAllTests()
+export async function getRecentTests(limit = 4, signal?: AbortSignal): Promise<Test[]> {
+  const tests = await getAllTests(undefined, signal)
 
   return tests
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
