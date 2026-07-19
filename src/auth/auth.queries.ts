@@ -10,14 +10,18 @@ export const userQueryOptions = queryOptions({
   queryFn: authApi.getCurrentUser,
 })
 
-export function useSignIn() {
+export function useSignIn(redirectTo?: string) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   return useMutation({
     mutationFn: (dto: SignInDto) => authApi.signIn(dto),
     onSuccess: ({ user }) => {
       queryClient.setQueryData(userQueryKey, user)
-      navigate({ to: '/dashboard' })
+      if (redirectTo) {
+        navigate({ href: redirectTo })
+      } else {
+        navigate({ to: '/dashboard' })
+      }
     },
   })
 }

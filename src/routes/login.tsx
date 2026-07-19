@@ -14,12 +14,20 @@ import { IconAlertCircle } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useSignIn } from '../auth/auth.queries'
 
+interface LoginSearch {
+  redirect?: string
+}
+
 export const Route = createFileRoute('/login')({
+  validateSearch: (search: Record<string, unknown>): LoginSearch => ({
+    redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
+  }),
   component: Signin,
 })
 
 function Signin() {
-  const { mutate: signIn, isPending, error } = useSignIn()
+  const { redirect } = Route.useSearch()
+  const { mutate: signIn, isPending, error } = useSignIn(redirect)
 
   const form = useForm({
     initialValues: {

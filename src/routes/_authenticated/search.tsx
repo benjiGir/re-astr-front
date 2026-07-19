@@ -16,11 +16,20 @@ import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useArchiveSearchData } from '../../api/queries/tests.queries'
+import { categoriesOptions } from '../../api/queries/categories.queries'
+import { projectsOptions } from '../../api/queries/projects.queries'
+import { testSearchOptions, useArchiveSearchData } from '../../api/queries/tests.queries'
 import { ArchiveResultsTable } from '../../components/Search/ArchiveResultsTable'
+import { queryClient } from '../../services/queryClient'
 import type { TestStatus } from '../../types/api'
 
 export const Route = createFileRoute('/_authenticated/search')({
+  loader: () =>
+    Promise.all([
+      queryClient.ensureQueryData(testSearchOptions()),
+      queryClient.ensureQueryData(projectsOptions()),
+      queryClient.ensureQueryData(categoriesOptions()),
+    ]),
   component: SearchPage,
 })
 

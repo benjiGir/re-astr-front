@@ -13,12 +13,22 @@ import {
 import { IconPlus, IconSearch } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { categoriesOptions } from '../../api/queries/categories.queries'
+import { projectsOptions } from '../../api/queries/projects.queries'
+import { allTestsOptions } from '../../api/queries/tests.queries'
 import { ConfirmDeleteModal } from '../../components/ProjectsCategories/ConfirmDeleteModal'
 import { EntityFormModal } from '../../components/ProjectsCategories/EntityFormModal'
 import { EntityGrid } from '../../components/ProjectsCategories/EntityGrid'
 import { type TabValue, useProjectsPage } from '../../hooks/useProjectsPage'
+import { queryClient } from '../../services/queryClient'
 
 export const Route = createFileRoute('/_authenticated/projects')({
+  loader: () =>
+    Promise.all([
+      queryClient.ensureQueryData(projectsOptions()),
+      queryClient.ensureQueryData(categoriesOptions()),
+      queryClient.ensureQueryData(allTestsOptions()),
+    ]),
   component: ProjectsPage,
 })
 

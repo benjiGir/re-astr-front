@@ -22,8 +22,14 @@ import { projectsOptions } from '../../api/queries/projects.queries'
 import { PRIORITIES, TEST_TYPES } from '../../constants/test-metadata'
 import { FileUploadZone } from '../../components/Upload/FileUploadZone'
 import { DynamicField } from '../../components/Upload/DynamicField'
+import { queryClient } from '../../services/queryClient'
 
 export const Route = createFileRoute('/_authenticated/upload')({
+  loader: () =>
+    Promise.all([
+      queryClient.ensureQueryData(categoriesOptions()),
+      queryClient.ensureQueryData(projectsOptions()),
+    ]),
   component: UploadPage,
 })
 

@@ -8,11 +8,20 @@ import {
 } from '@tabler/icons-react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { useDashboardData } from '../../api/queries/dashboard.queries'
+import { categoriesOptions } from '../../api/queries/categories.queries'
+import { dashboardStatsOptions, useDashboardData } from '../../api/queries/dashboard.queries'
+import { recentTestsOptions } from '../../api/queries/tests.queries'
 import { ArchivesList } from '../../components/Dashboard/ArchivesList'
 import { StatsCard } from '../../components/Dashboard/StatsCard'
+import { queryClient } from '../../services/queryClient'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
+  loader: () =>
+    Promise.all([
+      queryClient.ensureQueryData(dashboardStatsOptions()),
+      queryClient.ensureQueryData(recentTestsOptions(4)),
+      queryClient.ensureQueryData(categoriesOptions()),
+    ]),
   component: DashboardPage,
 })
 
