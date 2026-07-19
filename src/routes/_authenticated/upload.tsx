@@ -13,11 +13,12 @@ import {
 import { useForm } from '@mantine/form'
 import type { FileWithPath } from '@mantine/dropzone'
 import { IconPlus } from '@tabler/icons-react'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useCategories, useCategory } from '../../api/queries/categories.queries'
-import { useProjects } from '../../api/queries/projects.queries'
+import { categoriesOptions, categoryOptions } from '../../api/queries/categories.queries'
+import { projectsOptions } from '../../api/queries/projects.queries'
 import { PRIORITIES, TEST_TYPES } from '../../constants/test-metadata'
 import { FileUploadZone } from '../../components/Upload/FileUploadZone'
 import { DynamicField } from '../../components/Upload/DynamicField'
@@ -43,8 +44,8 @@ interface UploadFormValues {
 function UploadPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data: categories, isLoading: loadingCategories } = useCategories()
-  const { data: projects, isLoading: loadingProjects } = useProjects()
+  const { data: categories, isLoading: loadingCategories } = useQuery(categoriesOptions())
+  const { data: projects, isLoading: loadingProjects } = useQuery(projectsOptions())
   const [files, setFiles] = useState<FileWithPath[]>([])
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
@@ -52,7 +53,9 @@ function UploadPage() {
   const [commonData, setCommonData] = useState<Record<string, any>>({})
 
   // Fetch selected category details
-  const { data: selectedCategory, isLoading: loadingCategory } = useCategory(selectedCategoryId)
+  const { data: selectedCategory, isLoading: loadingCategory } = useQuery(
+    categoryOptions(selectedCategoryId),
+  )
 
   const form = useForm<UploadFormValues>({
     initialValues: {
@@ -141,12 +144,12 @@ function UploadPage() {
   }
 
   // Get test types and priorities from constants with translations
-  const testTypes = TEST_TYPES.map(type => ({
+  const testTypes = TEST_TYPES.map((type) => ({
     value: type,
     label: t(`testTypes.${type}`),
   }))
 
-  const priorities = PRIORITIES.map(priority => ({
+  const priorities = PRIORITIES.map((priority) => ({
     value: priority,
     label: t(`priorities.${priority}`),
   }))
@@ -180,7 +183,12 @@ function UploadPage() {
               {files.length > 0 && (
                 <Stack gap="xs">
                   {files.map((file, index) => (
-                    <Group key={index} justify="space-between" p="xs" style={{ backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                    <Group
+                      key={index}
+                      justify="space-between"
+                      p="xs"
+                      style={{ backgroundColor: '#f5f5f5', borderRadius: '4px' }}
+                    >
                       <Text size="sm">{file.name}</Text>
                       <Text size="xs" c="#717182">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
@@ -293,36 +301,37 @@ function UploadPage() {
           </Card>
 
           {/* Section 4: Champs Spécifiques à la Catégorie */}
-          {selectedCategory?.baseSchema?.fields && selectedCategory.baseSchema.fields.length > 0 && (
-            <Card withBorder padding="lg" radius="md">
-              <Stack gap="md">
-                <Stack gap={4}>
-                  <Text size="md" fw={500} c="#0a0a0a">
-                    Champs Spécifiques
-                  </Text>
-                  <Text size="md" c="#717182">
-                    Champs requis pour la catégorie "{selectedCategory.name}"
-                  </Text>
-                </Stack>
+          {selectedCategory?.baseSchema?.fields &&
+            selectedCategory.baseSchema.fields.length > 0 && (
+              <Card withBorder padding="lg" radius="md">
+                <Stack gap="md">
+                  <Stack gap={4}>
+                    <Text size="md" fw={500} c="#0a0a0a">
+                      Champs Spécifiques
+                    </Text>
+                    <Text size="md" c="#717182">
+                      Champs requis pour la catégorie "{selectedCategory.name}"
+                    </Text>
+                  </Stack>
 
-                <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-                  {selectedCategory.baseSchema.fields.map((field) => (
-                    <DynamicField
-                      key={field.key}
-                      field={field}
-                      value={commonData[field.key]}
-                      onChange={(value) => {
-                        setCommonData((prev) => ({
-                          ...prev,
-                          [field.key]: value,
-                        }))
-                      }}
-                    />
-                  ))}
-                </SimpleGrid>
-              </Stack>
-            </Card>
-          )}
+                  <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                    {selectedCategory.baseSchema.fields.map((field) => (
+                      <DynamicField
+                        key={field.key}
+                        field={field}
+                        value={commonData[field.key]}
+                        onChange={(value) => {
+                          setCommonData((prev) => ({
+                            ...prev,
+                            [field.key]: value,
+                          }))
+                        }}
+                      />
+                    ))}
+                  </SimpleGrid>
+                </Stack>
+              </Card>
+            )}
 
           {/* Section 5: Tags */}
           <Card withBorder padding="lg" radius="md">
@@ -349,11 +358,7 @@ function UploadPage() {
                   }}
                   style={{ flex: 1 }}
                 />
-                <Button
-                  onClick={addTag}
-                  size="sm"
-                  style={{ backgroundColor: '#030213' }}
-                >
+                <Button onClick={addTag} size="sm" style={{ backgroundColor: '#030213' }}>
                   <IconPlus size={16} />
                 </Button>
               </Group>
@@ -361,12 +366,7 @@ function UploadPage() {
               {tags.length > 0 && (
                 <Group gap="xs">
                   {tags.map((tag) => (
-                    <Button
-                      key={tag}
-                      variant="light"
-                      size="xs"
-                      onClick={() => removeTag(tag)}
-                    >
+                    <Button key={tag} variant="light" size="xs" onClick={() => removeTag(tag)}>
                       {tag} ×
                     </Button>
                   ))}
@@ -377,17 +377,10 @@ function UploadPage() {
 
           {/* Actions */}
           <Group justify="flex-end">
-            <Button
-              variant="outline"
-              color="gray"
-              onClick={() => navigate({ to: '/dashboard' })}
-            >
+            <Button variant="outline" color="gray" onClick={() => navigate({ to: '/dashboard' })}>
               Annuler
             </Button>
-            <Button
-              type="submit"
-              style={{ backgroundColor: '#030213' }}
-            >
+            <Button type="submit" style={{ backgroundColor: '#030213' }}>
               Créer l'Archive
             </Button>
           </Group>

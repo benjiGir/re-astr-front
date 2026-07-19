@@ -9,7 +9,13 @@ interface StatsCardProps {
   variant?: 'positive' | 'neutral'
 }
 
-export function StatsCard({ title, value, description, icon, variant = 'positive' }: StatsCardProps) {
+export function StatsCard({
+  title,
+  value,
+  description,
+  icon,
+  variant = 'positive',
+}: StatsCardProps) {
   return (
     <Card
       withBorder

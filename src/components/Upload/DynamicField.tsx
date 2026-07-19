@@ -1,10 +1,4 @@
-import {
-  Checkbox,
-  NumberInput,
-  Select,
-  TextInput,
-  Textarea,
-} from '@mantine/core'
+import { Checkbox, NumberInput, Select, TextInput, Textarea } from '@mantine/core'
 import type { FieldDefinition } from '../../types/api'
 
 interface DynamicFieldProps {
@@ -47,10 +41,7 @@ export function DynamicField({ field, value, onChange, error }: DynamicFieldProp
       }
 
       // If has minLength/maxLength constraints, use Textarea for longer text
-      if (
-        field.validation?.minLength &&
-        field.validation.minLength > 100
-      ) {
+      if (field.validation?.minLength && field.validation.minLength > 100) {
         return (
           <Textarea
             {...commonProps}

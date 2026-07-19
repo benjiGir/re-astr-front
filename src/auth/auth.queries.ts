@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import type { SignInDto, SignUpDto } from '../types/api'
 import * as authApi from './auth.service'
@@ -9,11 +9,6 @@ export const userQueryOptions = queryOptions({
   queryKey: userQueryKey,
   queryFn: authApi.getCurrentUser,
 })
-
-export function useCurrentUser() {
-  const { data, ...rest } = useQuery(userQueryOptions)
-  return { user: data, ...rest }
-}
 
 export function useSignIn() {
   const queryClient = useQueryClient()

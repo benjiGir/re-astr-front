@@ -1,0 +1,96 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "jsx-a11y", "react-perf"],
+  "env": {
+    "builtin": true,
+    "browser": true
+  },
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "complexity": "warn",
+    "eqeqeq": "warn",
+    "no-loss-of-precision": "error",
+    "no-unused-vars": "error",
+    "typescript/ban-types": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-namespace": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/array-type": "error",
+    "typescript/prefer-for-of": "warn",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-extra-non-null-assertion": "error",
+    "typescript/no-unsafe-declaration-merging": "error",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/require-await": "warn",
+    "unicorn/filename-case": [
+      "warn",
+      {
+        "cases": {
+          "kebabCase": true,
+          "camelCase": true,
+          "pascalCase": true
+        }
+      }
+    ],
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-number-properties": "error",
+    "oxc/no-accumulating-spread": "warn",
+    "oxc/no-barrel-file": "warn",
+
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/no-children-prop": "error",
+    "react/no-array-index-key": "warn",
+    "react/no-danger": "error",
+    "react/no-danger-with-children": "error",
+
+    "jsx_a11y/no-access-key": "warn",
+    "jsx_a11y/aria-unsupported-elements": "warn",
+    "jsx_a11y/no-autofocus": "warn",
+    "jsx_a11y/no-distracting-elements": "error",
+    "jsx_a11y/scope": "error",
+    "jsx_a11y/no-noninteractive-element-to-interactive-role": "warn",
+    "jsx_a11y/tabindex-no-positive": "warn",
+    "jsx_a11y/img-redundant-alt": "warn",
+    "jsx_a11y/no-redundant-roles": "warn",
+    "jsx_a11y/interactive-supports-focus": "warn",
+    "jsx_a11y/aria-props": "error",
+    "jsx_a11y/aria-proptypes": "error",
+    "jsx_a11y/anchor-is-valid": "error"
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx", "**/__tests__/**/*"],
+      "rules": {
+        "typescript/no-explicit-any": "off",
+        "typescript/no-non-null-assertion": "off"
+      }
+    },
+    {
+      "files": ["vite.config.ts", "*.config.ts", "*.config.js"],
+      "rules": {
+        "unicorn/prefer-node-protocol": "off"
+      }
+    },
+    {
+      "files": ["src/routeTree.gen.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["src/main.tsx"],
+      "rules": {
+        "typescript/no-non-null-assertion": "off"
+      }
+    },
+    {
+      "files": ["src/auth/auth.service.ts"],
+      "rules": {
+        "typescript/require-await": "off"
+      }
+    }
+  ]
+}

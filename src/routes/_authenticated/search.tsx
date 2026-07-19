@@ -1,4 +1,16 @@
-import { Alert, Button, Card, Collapse, Group, Loader, Select, Stack, Text, TextInput, Title } from '@mantine/core'
+import {
+  Alert,
+  Button,
+  Card,
+  Collapse,
+  Group,
+  Loader,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'

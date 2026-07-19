@@ -67,10 +67,20 @@ export function ArchiveResultsTable({ tests }: ArchiveResultsTableProps) {
               </Table.Td>
               <Table.Td>
                 <Group gap={4}>
-                  <ActionIcon variant="subtle" color="gray" aria-label={t('search.table.view')} disabled>
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    aria-label={t('search.table.view')}
+                    disabled
+                  >
                     <IconEye size={16} />
                   </ActionIcon>
-                  <ActionIcon variant="subtle" color="gray" aria-label={t('search.table.download')} disabled>
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    aria-label={t('search.table.download')}
+                    disabled
+                  >
                     <IconDownload size={16} />
                   </ActionIcon>
                 </Group>

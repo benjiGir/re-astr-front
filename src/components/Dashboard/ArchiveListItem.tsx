@@ -12,7 +12,10 @@ interface ArchiveListItemProps {
   status: TestStatus
 }
 
-const statusConfig: Record<TestStatus, { bg: string; color: string; variant: 'filled' | 'outline' }> = {
+const statusConfig: Record<
+  TestStatus,
+  { bg: string; color: string; variant: 'filled' | 'outline' }
+> = {
   draft: {
     bg: '#eceef2',
     color: '#030213',
