@@ -1,5 +1,6 @@
 import { ActionIcon, Badge, Group, Stack, Table, Text } from '@mantine/core'
 import { IconDownload, IconEye } from '@tabler/icons-react'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import type { Test } from '../../types/api'
 import { formatDate, formatSize } from '../../utils/testFormatting'
@@ -67,14 +68,16 @@ export function ArchiveResultsTable({ tests }: ArchiveResultsTableProps) {
               </Table.Td>
               <Table.Td>
                 <Group gap={4}>
-                  <ActionIcon
-                    variant="subtle"
-                    color="gray"
-                    aria-label={t('search.table.view')}
-                    disabled
-                  >
-                    <IconEye size={16} />
-                  </ActionIcon>
+                  <Link to="/tests/$testId" params={{ testId: test.id }}>
+                    <ActionIcon
+                      component="span"
+                      variant="subtle"
+                      color="gray"
+                      aria-label={t('search.table.view')}
+                    >
+                      <IconEye size={16} />
+                    </ActionIcon>
+                  </Link>
                   <ActionIcon
                     variant="subtle"
                     color="gray"

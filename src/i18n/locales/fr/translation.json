@@ -185,5 +185,33 @@
       "title": "Erreur",
       "message": "Une erreur est survenue lors du chargement des archives"
     }
+  },
+  "testDetail": {
+    "back": "Retour à la recherche",
+    "noData": "Aucune donnée enregistrée",
+    "infoSection": {
+      "title": "Informations Générales",
+      "project": "Projet",
+      "category": "Catégorie",
+      "author": "Auteur",
+      "createdAt": "Créé le",
+      "updatedAt": "Modifié le",
+      "completedAt": "Terminé le"
+    },
+    "commonDataSection": {
+      "title": "Données Communes",
+      "description": "Champs définis par la catégorie de ce test"
+    },
+    "customDataSection": {
+      "title": "Données Spécifiques",
+      "description": "Champs personnalisés enregistrés pour ce test"
+    },
+    "metadataSection": {
+      "title": "Métadonnées"
+    },
+    "error": {
+      "title": "Erreur",
+      "message": "Une erreur est survenue lors du chargement du test"
+    }
   }
 }

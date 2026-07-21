@@ -14,6 +14,7 @@ export interface TestFilters {
 
 export const testKeys = {
   all: ['tests'] as const,
+  detail: (id: string) => ['tests', id] as const,
   search: (filters?: TestFilters) => ['tests', 'search', filters ?? {}] as const,
   recent: (limit: number) => ['tests', 'recent', { limit }] as const,
 }
@@ -23,6 +24,14 @@ export function testSearchOptions(filters?: TestFilters) {
     queryKey: testKeys.search(filters),
     queryFn: ({ signal }) => testsApi.searchTests(filters ?? {}, signal),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function testOptions(id: string) {
+  return queryOptions({
+    queryKey: testKeys.detail(id),
+    queryFn: ({ signal }) => testsApi.getTestById(id, signal),
+    enabled: !!id,
   })
 }
 
