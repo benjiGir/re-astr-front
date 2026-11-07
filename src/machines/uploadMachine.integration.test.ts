@@ -64,7 +64,9 @@ describe('uploadMachine — integration (real service + http stack)', () => {
     actor.send({ type: 'PROJECT_SELECTED', projectId: fakeTest.projectId })
     actor.send({ type: 'CATEGORY_SELECTED', categoryId: fakeCategory.id })
 
-    await waitFor(actor, (s) => s.value === 'fillingDynamicFields', { timeout: 1000 })
+    await waitFor(actor, (s) => s.matches({ collecting: 'fillingDynamicFields' }), {
+      timeout: 1000,
+    })
 
     const input: CreateTestDto = {
       projectId: fakeTest.projectId,

@@ -262,3 +262,47 @@ delete pour projets ET catégories**, aucune erreur console, updates optimistes 
 immédiatement dans la liste. Contrairement à `upload.tsx` (Phase 3), cette page n'a pas de
 `Select` Mantine dans le flux CRUD (juste des `TextInput`/`Textarea`), donc aucune limite d'outil
 rencontrée ici — vérification bout-en-bout complète, pas seulement partielle.
+
+## Bug post-Phase 3 — champs spécifiques de catégorie absents (2026-11-07)
+
+**Signalé par l'utilisateur en usage réel** : sélectionner une catégorie dans `upload.tsx`
+n'affichait pas ses champs spécifiques — exactement le genre de défaut que la vérification
+navigateur de la Phase 3 n'avait pas pu couvrir (`Select` Mantine non pilotable par l'outil à
+l'époque, cf. entrée Phase 3 ci-dessus).
+
+**Cause racine confirmée en inspectant le snapshot XState en direct** (fiber React → hook state,
+cf. technique dans la session) : `CATEGORY_SELECTED`/`PROJECT_SELECTED`/`FILES_SELECTED` étaient
+dupliqués dans `collectingMetadata` et `fillingDynamicFields`, mais **absents de `idle`**. Choisir
+une catégorie (ou un projet) avant de déposer un fichier — un ordre de remplissage parfaitement
+normal, rien dans l'UI ne force "fichier d'abord" — envoyait `CATEGORY_SELECTED` pendant que la
+machine était encore en `idle`, qui ignore silencieusement tout événement non géré. Aucune erreur,
+aucun indice : `selectedCategoryId` restait `null` pour toujours, donc
+`useQuery(categoryOptions(...))` restait désactivée et `categoryFields` restait `[]`.
+
+**Fix : remonté les 3 événements sur un état parent partagé plutôt que corriger seulement
+`idle`.** Patcher `idle` en recopiant le même bloc une 4ᵉ fois aurait corrigé ce bug précis sans
+traiter sa cause — la duplication elle-même, qui garantit qu'un futur état oubliera à son tour. À
+la place, `idle`/`validatingFiles`/`collectingMetadata`/`loadingCategorySchema`/
+`fillingDynamicFields` sont maintenant des enfants d'un état composé `collecting`, et les 3
+événements vivent une seule fois dans le `on` de ce parent (leur comportement était déjà identique
+dans tous ces états). `submitting`/`submitFailed`/`success` restent en dehors de `collecting`,
+donc ces événements ne peuvent pas interrompre une soumission en cours — un root-level `on` global
+aurait eu cet effet de bord indésirable, d'où le choix du parent imbriqué plutôt que du machine-level
+`on`. Bénéfice gratuit : re-sélectionner une catégorie PENDANT que la précédente charge encore
+(`loadingCategorySchema`) annule proprement l'ancien chargement et relance avec la nouvelle — avant
+ce correctif, cette interaction n'était gérée nulle part.
+
+**Conséquence mécanique** : `snapshot.value`/`.matches()` doivent désormais qualifier le parent
+pour ces 5 états (`{ collecting: 'fillingDynamicFields' }` plutôt que `'fillingDynamicFields'`) —
+`submitting`/`submitFailed`/`success` restent de simples chaînes. Mis à jour dans `upload.tsx` et
+les deux fichiers de tests. 2 tests de régression ajoutés (`PROJECT_SELECTED`/`CATEGORY_SELECTED`
+depuis `idle`) pour verrouiller ce cas précis.
+
+**Piège de vérification retrouvé** : en testant dans le navigateur juste après avoir édité
+`uploadMachine.ts`, un onglet resté ouvert depuis avant l'édition a affiché une erreur HMR
+(`State 'collectingMetadata' does not exist on 'upload'`) — `@xstate/react` tente de migrer le
+snapshot persisté de l'ancien acteur vers la nouvelle forme de machine quand l'identité du config
+change à chaud, et échoue puisque la forme a changé (plat → imbriqué). Confirmé bénin : un onglet
+frais (ou un vrai rechargement en prod, sans HMR) ne présente aucune erreur. Même famille que le
+faux-positif déjà noté en Phase 3 (double rendu StrictMode) — toujours vérifier avec un onglet
+neuf avant de conclure à un bug suite à une édition de code pendant que le dev server tourne.

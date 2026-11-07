@@ -46,15 +46,38 @@ describe('uploadMachine — idle to collectingMetadata', () => {
   it('idle --FILES_SELECTED(valid)--> collectingMetadata (via validatingFiles)', () => {
     const actor = createActor(uploadMachine).start()
     actor.send({ type: 'FILES_SELECTED', files: [file()] })
-    expect(actor.getSnapshot().value).toBe('collectingMetadata')
+    expect(actor.getSnapshot().value).toEqual({ collecting: 'collectingMetadata' })
     expect(actor.getSnapshot().context.issues).toEqual([])
   })
 
   it('idle --FILES_SELECTED(invalid)--> back to idle with issues', () => {
     const actor = createActor(uploadMachine).start()
     actor.send({ type: 'FILES_SELECTED', files: [] })
-    expect(actor.getSnapshot().value).toBe('idle')
+    expect(actor.getSnapshot().value).toEqual({ collecting: 'idle' })
     expect(actor.getSnapshot().context.issues.length).toBeGreaterThan(0)
+  })
+})
+
+describe('uploadMachine — PROJECT_SELECTED/CATEGORY_SELECTED work regardless of child state', () => {
+  // Bug found live: these were only wired on collectingMetadata/
+  // fillingDynamicFields, so picking a project/category before dropping any
+  // file (perfectly natural UI order — nothing in the form forces files
+  // first) was silently dropped, and the category's specific fields never
+  // appeared. Now hoisted onto the shared `collecting` parent so every
+  // child state gets them for free — this test guards the regression at
+  // the state most likely to be forgotten again: `idle`.
+  it('PROJECT_SELECTED from idle (no files yet) is not dropped', () => {
+    const actor = createActor(uploadMachine).start()
+    actor.send({ type: 'PROJECT_SELECTED', projectId: 'p1' })
+    expect(actor.getSnapshot().context.selectedProjectId).toBe('p1')
+    expect(actor.getSnapshot().value).toEqual({ collecting: 'idle' })
+  })
+
+  it('CATEGORY_SELECTED from idle (no files yet) starts loading the category', () => {
+    const actor = createActor(uploadMachine).start()
+    actor.send({ type: 'CATEGORY_SELECTED', categoryId: 'c1' })
+    expect(actor.getSnapshot().context.selectedCategoryId).toBe('c1')
+    expect(actor.getSnapshot().value).toEqual({ collecting: 'loadingCategorySchema' })
   })
 })
 
@@ -73,9 +96,11 @@ describe('uploadMachine — category loading', () => {
     const actor = createActor(withMockedCategoryLoad(true)).start()
     actor.send({ type: 'FILES_SELECTED', files: [file()] })
     actor.send({ type: 'CATEGORY_SELECTED', categoryId: 'c1' })
-    expect(actor.getSnapshot().value).toBe('loadingCategorySchema')
+    expect(actor.getSnapshot().value).toEqual({ collecting: 'loadingCategorySchema' })
 
-    await waitFor(actor, (s) => s.value === 'fillingDynamicFields', { timeout: 1000 })
+    await waitFor(actor, (s) => s.matches({ collecting: 'fillingDynamicFields' }), {
+      timeout: 1000,
+    })
     expect(actor.getSnapshot().context.selectedCategoryId).toBe('c1')
   })
 
@@ -84,7 +109,9 @@ describe('uploadMachine — category loading', () => {
     actor.send({ type: 'FILES_SELECTED', files: [file()] })
     actor.send({ type: 'CATEGORY_SELECTED', categoryId: 'c1' })
 
-    await waitFor(actor, (s) => s.value === 'collectingMetadata', { timeout: 1000 })
+    await waitFor(actor, (s) => s.matches({ collecting: 'collectingMetadata' }), {
+      timeout: 1000,
+    })
     expect(actor.getSnapshot().context.issues.length).toBeGreaterThan(0)
   })
 })
@@ -103,7 +130,9 @@ describe('uploadMachine — submission and retry', () => {
     const actor = createActor(machine).start()
     actor.send({ type: 'FILES_SELECTED', files: [file()] })
     actor.send({ type: 'CATEGORY_SELECTED', categoryId: 'c1' })
-    await waitFor(actor, (s) => s.value === 'fillingDynamicFields', { timeout: 1000 })
+    await waitFor(actor, (s) => s.matches({ collecting: 'fillingDynamicFields' }), {
+      timeout: 1000,
+    })
     return actor
   }
 
@@ -158,6 +187,6 @@ describe('uploadMachine — submission and retry', () => {
     await waitFor(actor, (s) => s.value === 'submitFailed', { timeout: 1000 })
 
     actor.send({ type: 'CANCEL' })
-    expect(actor.getSnapshot().value).toBe('fillingDynamicFields')
+    expect(actor.getSnapshot().value).toEqual({ collecting: 'fillingDynamicFields' })
   })
 })

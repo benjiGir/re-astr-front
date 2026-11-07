@@ -79,7 +79,7 @@ export const uploadMachine = setup({
   },
 }).createMachine({
   id: 'upload',
-  initial: 'idle',
+  initial: 'collecting',
   context: {
     files: [],
     selectedProjectId: null,
@@ -90,81 +90,78 @@ export const uploadMachine = setup({
     retries: 0,
   },
   states: {
-    idle: {
+    // FILES_SELECTED/PROJECT_SELECTED/CATEGORY_SELECTED behave identically
+    // no matter which of this state's children is active (bug found live:
+    // these were only wired on collectingMetadata/fillingDynamicFields,
+    // so a category picked before a file was present was silently
+    // dropped — idle had no handler for it at all). Defining them once on
+    // the shared parent, instead of copy-pasting into every child,
+    // structurally rules out that class of bug: a new child state gets
+    // this handling for free. They never apply to submitting/submitFailed/
+    // success, which live outside this compound state.
+    collecting: {
+      initial: 'idle',
       on: {
         FILES_SELECTED: {
-          target: 'validatingFiles',
-          actions: assign({ files: ({ event }) => event.files }),
-        },
-      },
-    },
-    validatingFiles: {
-      always: [
-        {
-          guard: 'filesValid',
-          target: 'collectingMetadata',
-          actions: assign({ issues: [] }),
-        },
-        {
-          target: 'idle',
-          actions: assign({ issues: ({ context }) => validateFiles(context.files) }),
-        },
-      ],
-    },
-    collectingMetadata: {
-      on: {
-        FILES_SELECTED: {
-          target: 'validatingFiles',
+          target: '.validatingFiles',
           actions: assign({ files: ({ event }) => event.files }),
         },
         PROJECT_SELECTED: {
           actions: assign({ selectedProjectId: ({ event }) => event.projectId }),
         },
         CATEGORY_SELECTED: {
-          target: 'loadingCategorySchema',
+          target: '.loadingCategorySchema',
           actions: assign({ selectedCategoryId: ({ event }) => event.categoryId }),
         },
       },
-    },
-    loadingCategorySchema: {
-      invoke: {
-        src: 'warmCategoryCache',
-        input: ({ context }) => ({ categoryId: context.selectedCategoryId as string }),
-        onDone: {
-          target: 'fillingDynamicFields',
-          actions: assign({ issues: [] }),
+      states: {
+        idle: {},
+        validatingFiles: {
+          always: [
+            {
+              guard: 'filesValid',
+              target: 'collectingMetadata',
+              actions: assign({ issues: [] }),
+            },
+            {
+              target: 'idle',
+              actions: assign({ issues: ({ context }) => validateFiles(context.files) }),
+            },
+          ],
         },
-        onError: {
-          target: 'collectingMetadata',
-          actions: assign({
-            issues: [{ path: 'category', message: 'Failed to load the category fields' }],
-          }),
+        collectingMetadata: {},
+        loadingCategorySchema: {
+          invoke: {
+            src: 'warmCategoryCache',
+            input: ({ context }) => ({ categoryId: context.selectedCategoryId as string }),
+            onDone: {
+              target: 'fillingDynamicFields',
+              actions: assign({ issues: [] }),
+            },
+            onError: {
+              target: 'collectingMetadata',
+              actions: assign({
+                issues: [{ path: 'category', message: 'Failed to load the category fields' }],
+              }),
+            },
+          },
         },
-      },
-    },
-    fillingDynamicFields: {
-      on: {
-        FILES_SELECTED: {
-          target: 'validatingFiles',
-          actions: assign({ files: ({ event }) => event.files }),
-        },
-        PROJECT_SELECTED: {
-          actions: assign({ selectedProjectId: ({ event }) => event.projectId }),
-        },
-        CATEGORY_SELECTED: {
-          target: 'loadingCategorySchema',
-          actions: assign({ selectedCategoryId: ({ event }) => event.categoryId }),
-        },
-        SUBMIT: {
-          target: 'submitting',
-          actions: assign({
-            pendingInput: ({ event }) => event.input,
-            retries: 0,
-          }),
+        fillingDynamicFields: {
+          id: 'fillingDynamicFields',
+          on: {
+            SUBMIT: {
+              target: '#submitting',
+              actions: assign({
+                pendingInput: ({ event }) => event.input,
+                retries: 0,
+              }),
+            },
+          },
         },
       },
     },
     submitting: {
+      id: 'submitting',
       invoke: {
         src: 'createTest',
         input: ({ context }) => context.pendingInput as CreateTestDto,
@@ -187,7 +184,7 @@ export const uploadMachine = setup({
           target: 'submitting',
           actions: assign({ retries: ({ context }) => context.retries + 1 }),
         },
-        CANCEL: { target: 'fillingDynamicFields' },
+        CANCEL: { target: '#fillingDynamicFields' },
       },
     },
     success: {

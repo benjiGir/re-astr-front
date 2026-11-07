@@ -183,7 +183,7 @@ function UploadPage() {
     label: t(`priorities.${priority}`),
   }))
 
-  const isSubmitReady = snapshot.matches('fillingDynamicFields')
+  const isSubmitReady = snapshot.matches({ collecting: 'fillingDynamicFields' })
   const isSubmitting = snapshot.matches('submitting')
   const submitFailed = snapshot.matches('submitFailed')
   const fileIssues = snapshot.context.issues.filter((issue) => issue.path === 'files')
