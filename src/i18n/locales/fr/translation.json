@@ -61,6 +61,13 @@
     "actions": {
       "cancel": "Annuler",
       "submit": "Créer l'Archive"
+    },
+    "submitError": {
+      "title": "Erreur",
+      "message": "La création de l'archive a échoué."
+    },
+    "success": {
+      "message": "Archive créée avec succès."
     }
   },
   "dashboard": {

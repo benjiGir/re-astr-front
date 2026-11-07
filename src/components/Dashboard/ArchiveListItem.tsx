@@ -1,7 +1,7 @@
 import { Badge, Box, Group, Stack, Text, ThemeIcon } from '@mantine/core'
 import { IconFile, IconFolder } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
-import type { TestStatus } from '../../types/api'
+import type { TestStatus } from '../../api/schemas/test.schema'
 
 interface ArchiveListItemProps {
   title: string

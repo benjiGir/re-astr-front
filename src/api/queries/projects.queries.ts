@@ -6,7 +6,9 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
-import type { CreateProjectDto, Project, UpdateProjectDto } from '../../types/api'
+import { devCheck } from '../schemas/_dev'
+import type { CreateProjectDto, Project, UpdateProjectDto } from '../schemas/project.schema'
+import { ProjectSchema } from '../schemas/project.schema'
 import * as projectsApi from '../services/projects.service'
 
 const REFERENCE_DATA_STALE_TIME = 10 * 60 * 1000
@@ -19,7 +21,8 @@ export const projectKeys = {
 export function projectsOptions() {
   return queryOptions({
     queryKey: projectKeys.all,
-    queryFn: ({ signal }) => projectsApi.getAllProjects(signal),
+    queryFn: async ({ signal }) =>
+      devCheck(ProjectSchema.array(), await projectsApi.getAllProjects(signal), 'projects.getAll'),
     staleTime: REFERENCE_DATA_STALE_TIME,
   })
 }
@@ -27,7 +30,8 @@ export function projectsOptions() {
 export function projectOptions(id: string) {
   return queryOptions({
     queryKey: projectKeys.detail(id),
-    queryFn: ({ signal }) => projectsApi.getProjectById(id, signal),
+    queryFn: async ({ signal }) =>
+      devCheck(ProjectSchema, await projectsApi.getProjectById(id, signal), 'projects.getById'),
     enabled: !!id,
     staleTime: REFERENCE_DATA_STALE_TIME,
   })

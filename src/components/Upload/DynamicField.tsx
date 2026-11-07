@@ -1,5 +1,5 @@
 import { Checkbox, NumberInput, Select, TextInput, Textarea } from '@mantine/core'
-import type { FieldDefinition } from '../../types/api'
+import type { FieldDefinition } from '../../domain/dynamic-fields/types'
 
 interface DynamicFieldProps {
   field: FieldDefinition

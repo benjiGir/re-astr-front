@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ValidationFailedError } from '../types/api'
+import type { ApiErrorBody, ValidationFailedError } from './schemas/error.schema'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 

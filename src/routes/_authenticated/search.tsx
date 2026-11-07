@@ -21,7 +21,7 @@ import { projectsOptions } from '../../api/queries/projects.queries'
 import { testSearchOptions, useArchiveSearchData } from '../../api/queries/tests.queries'
 import { ArchiveResultsTable } from '../../components/Search/ArchiveResultsTable'
 import { queryClient } from '../../services/queryClient'
-import type { TestStatus } from '../../types/api'
+import type { TestStatus } from '../../api/schemas/test.schema'
 
 export const Route = createFileRoute('/_authenticated/search')({
   loader: () =>

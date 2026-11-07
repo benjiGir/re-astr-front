@@ -6,7 +6,9 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
-import type { Category, CreateCategoryDto, UpdateCategoryDto } from '../../types/api'
+import { devCheck } from '../schemas/_dev'
+import type { Category, CreateCategoryDto, UpdateCategoryDto } from '../schemas/category.schema'
+import { CategorySchema } from '../schemas/category.schema'
 import * as categoriesApi from '../services/categories.service'
 
 const REFERENCE_DATA_STALE_TIME = 10 * 60 * 1000
@@ -19,7 +21,12 @@ export const categoryKeys = {
 export function categoriesOptions() {
   return queryOptions({
     queryKey: categoryKeys.all,
-    queryFn: ({ signal }) => categoriesApi.getAllCategories(signal),
+    queryFn: async ({ signal }) =>
+      devCheck(
+        CategorySchema.array(),
+        await categoriesApi.getAllCategories(signal),
+        'categories.getAll',
+      ),
     staleTime: REFERENCE_DATA_STALE_TIME,
   })
 }
@@ -27,7 +34,12 @@ export function categoriesOptions() {
 export function categoryOptions(id: string) {
   return queryOptions({
     queryKey: categoryKeys.detail(id),
-    queryFn: ({ signal }) => categoriesApi.getCategoryById(id, signal),
+    queryFn: async ({ signal }) =>
+      devCheck(
+        CategorySchema,
+        await categoriesApi.getCategoryById(id, signal),
+        'categories.getById',
+      ),
     enabled: !!id,
     staleTime: REFERENCE_DATA_STALE_TIME,
   })

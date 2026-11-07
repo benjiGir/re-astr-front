@@ -1,5 +1,5 @@
 import { Code, SimpleGrid, Stack, Text } from '@mantine/core'
-import type { FieldDefinition } from '../../types/api'
+import type { FieldDefinition } from '../../domain/dynamic-fields/types'
 import { formatFieldValue, humanizeKey } from '../../utils/testFormatting'
 
 interface TestDataGridProps {

@@ -1,6 +1,9 @@
 import { Alert, Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
 
 export interface EntityFormValues {
   name: string
@@ -27,15 +30,28 @@ export function EntityFormModal({
   onSubmit,
 }: EntityFormModalProps) {
   const { t } = useTranslation()
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z.string().trim().min(1, t('common:validation.required')),
+        description: z.string(),
+      }) satisfies z.ZodType<EntityFormValues>,
+    [t],
+  )
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<EntityFormValues>({ defaultValues: initialValues })
+  } = useForm<EntityFormValues>({
+    resolver: standardSchemaResolver(schema),
+    defaultValues: initialValues,
+  })
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Stack gap="md">
           {error && (
             <Alert color="red" title={t('projectsCategories.error.title')}>
@@ -47,10 +63,7 @@ export function EntityFormModal({
             placeholder={t('projectsCategories.form.namePlaceholder')}
             required
             error={errors.name?.message}
-            {...register('name', {
-              validate: (value) =>
-                value.trim().length === 0 ? t('common:validation.required') : true,
-            })}
+            {...register('name')}
           />
           <Textarea
             label={t('projectsCategories.form.description')}

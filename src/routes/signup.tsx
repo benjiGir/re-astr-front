@@ -9,10 +9,30 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useSignUp } from '../auth/auth.queries'
+import { SignUpDtoSchema } from '../api/schemas/auth.schema'
+
+// Signup-only concerns layered on top of the SignUpDto contract: `name` is
+// required here (the DTO itself allows it to be omitted) and confirmPassword
+// only exists to be checked against password, never sent to the API.
+const SignupFormSchema = SignUpDtoSchema.extend({
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be less than 50 characters'),
+  confirmPassword: z.string(),
+}).refine((values) => values.password === values.confirmPassword, {
+  message: "Password don't match.",
+  path: ['confirmPassword'],
+})
+
+type SignupFormValues = z.infer<typeof SignupFormSchema>
 
 export const Route = createFileRoute('/signup')({
   component: RouteComponent,
@@ -21,27 +41,16 @@ export const Route = createFileRoute('/signup')({
 function RouteComponent() {
   const { mutate: signUp, isPending, error } = useSignUp()
 
-  const form = useForm({
-    initialValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      name: '',
-    },
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email '),
-      password: (value) => (value.length < 6 ? 'Password need at least 6 characters ' : null),
-      confirmPassword: (value, values) =>
-        value === values.password ? null : "Password don't match. ",
-      name: (value) => {
-        if (!value || value.trim().length === 0) return 'Name is required'
-        if (value.trim().length < 2) return 'Name must be at least 2 characters'
-        if (value.trim().length > 50) return 'Name must be less than 50 characters'
-      },
-    },
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormValues>({
+    resolver: standardSchemaResolver(SignupFormSchema),
+    defaultValues: { email: '', password: '', confirmPassword: '', name: '' },
   })
 
-  const handleSubmit = (values: typeof form.values) => {
+  const onSubmit = (values: SignupFormValues) => {
     signUp({
       email: values.email,
       password: values.password,
@@ -59,7 +68,7 @@ function RouteComponent() {
                 Création compte Backoffice
               </Text>
               <Text size="sm">Créer un compte pour accéder au système de gestion d'archives</Text>
-              <form id="formgroup-legend-id" onSubmit={form.onSubmit(handleSubmit)}>
+              <form id="formgroup-legend-id" noValidate onSubmit={handleSubmit(onSubmit)}>
                 {error && (
                   <Alert icon={<IconAlertCircle size={16} />} title="Erreur" color="red">
                     {error.message}
@@ -72,7 +81,8 @@ function RouteComponent() {
                     label="Name"
                     placeholder="Your name"
                     required
-                    {...form.getInputProps('name')}
+                    error={errors.name?.message}
+                    {...register('name')}
                   />
                   <TextInput
                     variant="filled"
@@ -80,14 +90,16 @@ function RouteComponent() {
                     label="Email"
                     placeholder="votre@email.com"
                     required
-                    {...form.getInputProps('email')}
+                    error={errors.email?.message}
+                    {...register('email')}
                   />
                   <PasswordInput
                     variant="filled"
                     radius="md"
                     label="Mot de passe"
                     required
-                    {...form.getInputProps('password')}
+                    error={errors.password?.message}
+                    {...register('password')}
                     placeholder="••••••••"
                   />
                   <PasswordInput
@@ -95,7 +107,8 @@ function RouteComponent() {
                     radius="md"
                     label=" Confirmation mot de passe"
                     required
-                    {...form.getInputProps('confirmPassword')}
+                    error={errors.confirmPassword?.message}
+                    {...register('confirmPassword')}
                     placeholder="••••••••"
                   />
                   <Button

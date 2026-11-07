@@ -1,4 +1,4 @@
-import type { CreateProjectDto, Project, UpdateProjectDto } from '../../types/api'
+import type { CreateProjectDto, Project, UpdateProjectDto } from '../schemas/project.schema'
 import { apiFetch } from '../http'
 
 export async function getAllProjects(signal?: AbortSignal): Promise<Project[]> {

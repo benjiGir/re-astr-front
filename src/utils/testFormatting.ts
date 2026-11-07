@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import type { FieldDefinition, Test } from '../types/api'
+import type { Test } from '../api/schemas/test.schema'
+import type { FieldDefinition } from '../domain/dynamic-fields/types'
 
 /**
  * Format date to YYYY-MM-DD

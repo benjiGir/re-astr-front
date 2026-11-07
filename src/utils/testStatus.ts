@@ -1,4 +1,4 @@
-import type { TestStatus } from '../types/api'
+import type { TestStatus } from '../api/schemas/test.schema'
 
 export interface StatusBadgeStyle {
   bg: string

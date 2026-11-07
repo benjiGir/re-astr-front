@@ -1,7 +1,7 @@
 import { Button, Card, Stack, Text } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import type { Test } from '../../types/api'
+import type { Test } from '../../api/schemas/test.schema'
 import { ArchiveListItem } from './ArchiveListItem'
 
 interface ArchivesListProps {

@@ -1,4 +1,4 @@
-import type { Test } from '../../types/api'
+import type { Test } from '../schemas/test.schema'
 import { getAllProjects } from './projects.service'
 import { getAllTests } from './tests.service'
 

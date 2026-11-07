@@ -1,6 +1,8 @@
 import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import type { TestStatus } from '../../types/api'
+import { devCheck } from '../schemas/_dev'
+import type { TestStatus } from '../schemas/test.schema'
+import { TestSchema } from '../schemas/test.schema'
 import * as testsApi from '../services/tests.service'
 import { categoriesOptions } from './categories.queries'
 import { projectsOptions } from './projects.queries'
@@ -22,7 +24,12 @@ export const testKeys = {
 export function testSearchOptions(filters?: TestFilters) {
   return queryOptions({
     queryKey: testKeys.search(filters),
-    queryFn: ({ signal }) => testsApi.searchTests(filters ?? {}, signal),
+    queryFn: async ({ signal }) =>
+      devCheck(
+        TestSchema.array(),
+        await testsApi.searchTests(filters ?? {}, signal),
+        'tests.search',
+      ),
     placeholderData: keepPreviousData,
   })
 }
@@ -30,7 +37,8 @@ export function testSearchOptions(filters?: TestFilters) {
 export function testOptions(id: string) {
   return queryOptions({
     queryKey: testKeys.detail(id),
-    queryFn: ({ signal }) => testsApi.getTestById(id, signal),
+    queryFn: async ({ signal }) =>
+      devCheck(TestSchema, await testsApi.getTestById(id, signal), 'tests.getById'),
     enabled: !!id,
   })
 }
@@ -38,14 +46,16 @@ export function testOptions(id: string) {
 export function allTestsOptions() {
   return queryOptions({
     queryKey: testKeys.all,
-    queryFn: ({ signal }) => testsApi.getAllTests(undefined, signal),
+    queryFn: async ({ signal }) =>
+      devCheck(TestSchema.array(), await testsApi.getAllTests(undefined, signal), 'tests.getAll'),
   })
 }
 
 export function recentTestsOptions(limit = 4) {
   return queryOptions({
     queryKey: testKeys.recent(limit),
-    queryFn: ({ signal }) => testsApi.getRecentTests(limit, signal),
+    queryFn: async ({ signal }) =>
+      devCheck(TestSchema.array(), await testsApi.getRecentTests(limit, signal), 'tests.getRecent'),
   })
 }
 

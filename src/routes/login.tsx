@@ -9,10 +9,12 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
 import { useSignIn } from '../auth/auth.queries'
+import { type SignInDto, SignInDtoSchema } from '../api/schemas/auth.schema'
 
 interface LoginSearch {
   redirect?: string
@@ -29,22 +31,17 @@ function Signin() {
   const { redirect } = Route.useSearch()
   const { mutate: signIn, isPending, error } = useSignIn(redirect)
 
-  const form = useForm({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email '),
-      password: (value) => (value.length < 6 ? 'Password need at least 6 characters ' : null),
-    },
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInDto>({
+    resolver: standardSchemaResolver(SignInDtoSchema),
+    defaultValues: { email: '', password: '' },
   })
 
-  const handleSubmit = (values: typeof form.values) => {
-    signIn({
-      email: values.email,
-      password: values.password,
-    })
+  const onSubmit = (values: SignInDto) => {
+    signIn(values)
   }
 
   return (
@@ -57,7 +54,7 @@ function Signin() {
                 Connexion Backoffice
               </Text>
               <Text size="sm">Connectez-vous pour accéder au système de gestion d'archives</Text>
-              <form id="formgroup-legend-id" onSubmit={form.onSubmit(handleSubmit)}>
+              <form id="formgroup-legend-id" noValidate onSubmit={handleSubmit(onSubmit)}>
                 {error && (
                   <Alert icon={<IconAlertCircle size={16} />} title="Erreur" color="red">
                     {error.message}
@@ -70,15 +67,17 @@ function Signin() {
                     label="Email"
                     placeholder="votre@email.com"
                     required
-                    {...form.getInputProps('email')}
+                    error={errors.email?.message}
+                    {...register('email')}
                   />
                   <PasswordInput
                     variant="filled"
                     radius="md"
                     label="Mot de passe"
                     required
-                    {...form.getInputProps('password')}
                     placeholder="••••••••"
+                    error={errors.password?.message}
+                    {...register('password')}
                   />
                   <Button
                     type="submit"

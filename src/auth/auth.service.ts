@@ -1,5 +1,5 @@
 import { ApiError, apiFetch } from '../api/http'
-import type { AuthResponse, SignInDto, SignUpDto, User } from '../types/api'
+import type { AuthResponse, SignInDto, SignUpDto, User } from '../api/schemas/auth.schema'
 
 export async function signUp(dto: SignUpDto): Promise<AuthResponse> {
   return apiFetch<AuthResponse>('/auth/sign-up/email', {

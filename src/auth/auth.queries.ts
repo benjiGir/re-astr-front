@@ -1,13 +1,18 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import type { SignInDto, SignUpDto } from '../types/api'
+import { devCheck } from '../api/schemas/_dev'
+import { UserSchema } from '../api/schemas/auth.schema'
+import type { SignInDto, SignUpDto } from '../api/schemas/auth.schema'
 import * as authApi from './auth.service'
 
 export const userQueryKey = ['user']
 
 export const userQueryOptions = queryOptions({
   queryKey: userQueryKey,
-  queryFn: authApi.getCurrentUser,
+  queryFn: async () => {
+    const user = await authApi.getCurrentUser()
+    return user && devCheck(UserSchema, user, 'auth.getCurrentUser')
+  },
 })
 
 export function useSignIn(redirectTo?: string) {

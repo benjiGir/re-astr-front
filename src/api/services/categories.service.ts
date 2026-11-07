@@ -1,4 +1,4 @@
-import type { Category, CreateCategoryDto, UpdateCategoryDto } from '../../types/api'
+import type { Category, CreateCategoryDto, UpdateCategoryDto } from '../schemas/category.schema'
 import { apiFetch } from '../http'
 
 export async function getAllCategories(signal?: AbortSignal): Promise<Category[]> {

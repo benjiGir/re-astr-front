@@ -1,5 +1,6 @@
 import { SimpleGrid, Text } from '@mantine/core'
-import type { Category, Project } from '../../types/api'
+import type { Category } from '../../api/schemas/category.schema'
+import type { Project } from '../../api/schemas/project.schema'
 import { EntityCard } from './EntityCard'
 
 interface EntityGridProps<T extends Project | Category> {

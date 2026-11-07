@@ -1,6 +1,7 @@
 import { Group, rem, Text } from '@mantine/core'
 import { Dropzone, type FileWithPath } from '@mantine/dropzone'
 import { IconUpload, IconX } from '@tabler/icons-react'
+import { useTranslation } from 'react-i18next'
 
 interface FileUploadZoneProps {
   onDrop: (files: FileWithPath[]) => void
@@ -9,6 +10,7 @@ interface FileUploadZoneProps {
 }
 
 export function FileUploadZone({ onDrop, maxSize = 30 * 1024 ** 2, accept }: FileUploadZoneProps) {
+  const { t } = useTranslation()
   return (
     <Dropzone
       onDrop={onDrop}
@@ -59,10 +61,10 @@ export function FileUploadZone({ onDrop, maxSize = 30 * 1024 ** 2, accept }: Fil
 
         <div>
           <Text size="lg" inline c="#0a0a0a">
-            Cliquez pour sélectionner des fichiers ou glissez-déposez
+            {t('upload.filesSection.dropzoneText')}
           </Text>
           <Text size="sm" c="#717182" inline mt={7}>
-            Taille maximale : {(maxSize / 1024 / 1024).toFixed(0)} MB par fichier
+            {t('upload.filesSection.maxSize', { size: (maxSize / 1024 / 1024).toFixed(0) })}
           </Text>
         </div>
       </Group>

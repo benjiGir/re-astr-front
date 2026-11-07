@@ -2,7 +2,7 @@ import { ActionIcon, Badge, Group, Stack, Table, Text } from '@mantine/core'
 import { IconDownload, IconEye } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import type { Test } from '../../types/api'
+import type { Test } from '../../api/schemas/test.schema'
 import { formatDate, formatSize } from '../../utils/testFormatting'
 import { getStatusBadgeStyle } from '../../utils/testStatus'
 

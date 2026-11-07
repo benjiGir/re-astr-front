@@ -1,9 +1,17 @@
-import type { Test, TestStatus } from '../../types/api'
+import type { CreateTestDto, Test, TestStatus } from '../schemas/test.schema'
 import { apiFetch } from '../http'
 
 export async function getAllTests(categoryId?: string, signal?: AbortSignal): Promise<Test[]> {
   const query = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : ''
   return apiFetch<Test[]>(`/tests${query}`, { signal })
+}
+
+export async function createTest(dto: CreateTestDto, signal?: AbortSignal): Promise<Test> {
+  return apiFetch<Test>('/tests', {
+    method: 'POST',
+    body: JSON.stringify(dto),
+    signal,
+  })
 }
 
 export interface TestSearchFilters {

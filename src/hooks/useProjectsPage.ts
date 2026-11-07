@@ -1,46 +1,46 @@
-import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
+import { useDebouncedValue } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
+import { useMachine } from '@xstate/react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ApiError } from '../api/http'
 import { useCategoriesResource } from '../api/queries/categories.queries'
 import { useProjectsResource } from '../api/queries/projects.queries'
 import { allTestsOptions } from '../api/queries/tests.queries'
+import type { Category } from '../api/schemas/category.schema'
+import type { Project } from '../api/schemas/project.schema'
 import type { EntityFormValues } from '../components/ProjectsCategories/EntityFormModal'
-import type { Category, Project } from '../types/api'
+import { projectsModalMachine } from '../machines/projectsModalMachine'
 
 export type TabValue = 'projects' | 'categories'
 type Entity = Project | Category
 
 const EMPTY_FORM_VALUES: EntityFormValues = { name: '', description: '' }
 
+function deriveFormErrorMessage(error: unknown, t: (key: string) => string): string {
+  return error instanceof ApiError ? error.message : t('projectsCategories.formError.generic')
+}
+
+function deriveDeleteErrorMessage(error: unknown, t: (key: string) => string): string {
+  const hasTests =
+    error instanceof ApiError &&
+    (error.tag === 'ProjectHasTests' || error.tag === 'CategoryHasTests')
+  return hasTests
+    ? t('projectsCategories.deleteError.hasTests')
+    : t('projectsCategories.deleteError.generic')
+}
+
 export function useProjectsPage() {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<TabValue>('projects')
   const [search, setSearch] = useState('')
   const [debouncedSearch] = useDebouncedValue(search, 300)
-  const [formOpened, { open: openForm, close: closeFormDisclosure }] = useDisclosure(false)
-  const [editingEntity, setEditingEntity] = useState<Entity | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<
-    { type: 'project'; entity: Project } | { type: 'category'; entity: Category } | null
-  >(null)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [formError, setFormError] = useState<string | null>(null)
-
-  const closeForm = () => {
-    setFormError(null)
-    closeFormDisclosure()
-  }
-
-  const handleFormError = (error: unknown) => {
-    setFormError(
-      error instanceof ApiError ? error.message : t('projectsCategories.formError.generic'),
-    )
-  }
+  const [snapshot, send] = useMachine(projectsModalMachine)
 
   const projects = useProjectsResource()
   const categories = useCategoriesResource()
   const testsQuery = useQuery(allTestsOptions())
+  const resource = snapshot.context.entityType === 'category' ? categories : projects
 
   const projectArchiveCount = (id: string) =>
     testsQuery.data?.filter((test) => test.projectId === id).length ?? 0
@@ -61,112 +61,98 @@ export function useProjectsPage() {
     )
   }, [categories.query.data, debouncedSearch])
 
-  const modalInitialValues = useMemo(
+  // R1: the machine only holds `targetEntityId` — the entity itself is
+  // looked up here from the data React Query already has.
+  const targetEntity = useMemo(() => {
+    const { targetEntityId, entityType } = snapshot.context
+    if (!targetEntityId) return null
+    const list = entityType === 'category' ? categories.query.data : projects.query.data
+    return list?.find((entity) => entity.id === targetEntityId) ?? null
+  }, [snapshot.context, categories.query.data, projects.query.data])
+
+  const modalInitialValues: EntityFormValues = useMemo(
     () =>
-      editingEntity
-        ? { name: editingEntity.name, description: editingEntity.description ?? '' }
+      targetEntity
+        ? { name: targetEntity.name, description: targetEntity.description ?? '' }
         : EMPTY_FORM_VALUES,
-    [editingEntity],
+    [targetEntity],
   )
 
-  const isEditing = !!editingEntity
+  const isEditing = snapshot.matches('editing')
   const modalTitle = isEditing
-    ? activeTab === 'projects'
-      ? t('projectsCategories.editProject')
-      : t('projectsCategories.editCategory')
-    : activeTab === 'projects'
-      ? t('projectsCategories.newProject')
-      : t('projectsCategories.newCategory')
+    ? snapshot.context.entityType === 'category'
+      ? t('projectsCategories.editCategory')
+      : t('projectsCategories.editProject')
+    : snapshot.context.entityType === 'category'
+      ? t('projectsCategories.newCategory')
+      : t('projectsCategories.newProject')
 
   const handleCreate = () => {
-    setEditingEntity(null)
-    openForm()
+    send({ type: 'CREATE', entityType: activeTab === 'categories' ? 'category' : 'project' })
   }
 
   const handleEdit = (entity: Entity) => {
-    setEditingEntity(entity)
-    openForm()
-  }
-
-  const handleDeleteProject = (project: Project) => {
-    setDeleteTarget({ type: 'project', entity: project })
-  }
-
-  const handleDeleteCategory = (category: Category) => {
-    setDeleteTarget({ type: 'category', entity: category })
-  }
-
-  const handleCancelDelete = () => {
-    setDeleteTarget(null)
-    setDeleteError(null)
-  }
-
-  const handleConfirmDelete = () => {
-    if (!deleteTarget) return
-    const resource = deleteTarget.type === 'project' ? projects : categories
-    setDeleteError(null)
-    resource.remove.mutate(deleteTarget.entity.id, {
-      onSuccess: () => setDeleteTarget(null),
-      onError: (error) => {
-        const hasTests =
-          error instanceof ApiError &&
-          (error.tag === 'ProjectHasTests' || error.tag === 'CategoryHasTests')
-        setDeleteError(
-          hasTests
-            ? t('projectsCategories.deleteError.hasTests')
-            : t('projectsCategories.deleteError.generic'),
-        )
-      },
+    send({
+      type: 'EDIT',
+      entityType: activeTab === 'categories' ? 'category' : 'project',
+      entityId: entity.id,
     })
   }
 
-  const handleSubmitProject = (values: EntityFormValues, entity: Entity | null) => {
-    const dto = { name: values.name, description: values.description || undefined }
-    setFormError(null)
-    if (entity) {
-      projects.update.mutate(
-        { id: entity.id, dto },
-        { onSuccess: closeForm, onError: handleFormError },
-      )
-      return
-    }
-    projects.create.mutate(dto, { onSuccess: closeForm, onError: handleFormError })
+  const handleDeleteProject = (project: Project) => {
+    send({ type: 'DELETE', entityType: 'project', entityId: project.id })
   }
 
-  const handleSubmitCategory = (values: EntityFormValues, entity: Entity | null) => {
-    const dto = { name: values.name, description: values.description || undefined }
-    setFormError(null)
-    if (entity) {
-      categories.update.mutate(
-        { id: entity.id, dto },
-        { onSuccess: closeForm, onError: handleFormError },
-      )
-      return
-    }
-    categories.create.mutate(
-      { ...dto, baseSchema: { fields: [] } },
-      { onSuccess: closeForm, onError: handleFormError },
-    )
+  const handleDeleteCategory = (category: Category) => {
+    send({ type: 'DELETE', entityType: 'category', entityId: category.id })
   }
+
+  const closeForm = () => send({ type: 'CANCEL' })
+  const handleCancelDelete = () => send({ type: 'CANCEL' })
 
   const handleSubmit = (values: EntityFormValues) => {
-    const submit = activeTab === 'projects' ? handleSubmitProject : handleSubmitCategory
-    submit(values, editingEntity)
+    send({ type: 'SUBMIT', values })
+    const dto = { name: values.name, description: values.description || undefined }
+    const onSuccess = () => send({ type: 'MUTATION_SUCCESS' })
+    const onError = (error: unknown) =>
+      send({ type: 'MUTATION_ERROR', message: deriveFormErrorMessage(error, t) })
+
+    if (snapshot.context.targetEntityId) {
+      resource.update.mutate({ id: snapshot.context.targetEntityId, dto }, { onSuccess, onError })
+      return
+    }
+    if (snapshot.context.entityType === 'category') {
+      categories.create.mutate({ ...dto, baseSchema: { fields: [] } }, { onSuccess, onError })
+      return
+    }
+    projects.create.mutate(dto, { onSuccess, onError })
   }
 
+  const handleConfirmDelete = () => {
+    send({ type: 'CONFIRM_DELETE' })
+    const targetId = snapshot.context.targetEntityId
+    if (!targetId) return
+    resource.remove.mutate(targetId, {
+      onSuccess: () => send({ type: 'MUTATION_SUCCESS' }),
+      onError: (error) =>
+        send({ type: 'MUTATION_ERROR', message: deriveDeleteErrorMessage(error, t) }),
+    })
+  }
+
+  const formOpened = snapshot.matches('creating') || snapshot.matches('editing')
   const isSubmitting =
-    projects.create.isPending ||
-    projects.update.isPending ||
-    categories.create.isPending ||
-    categories.update.isPending
+    snapshot.matches({ creating: 'submitting' }) || snapshot.matches({ editing: 'submitting' })
+  const deleteModalOpened = snapshot.matches('confirmingDelete')
+  const isDeleting = snapshot.matches({ confirmingDelete: 'submitting' })
+  const formError = formOpened ? snapshot.context.error : null
+  const deleteError = deleteModalOpened ? snapshot.context.error : null
+
   const isLoading = projects.query.isLoading || categories.query.isLoading
   const isError = projects.query.isError || categories.query.isError
 
-  const deleteModalOpened = !!deleteTarget
-  const deleteConfirmMessage = deleteTarget
-    ? t('projectsCategories.deleteConfirm', { name: deleteTarget.entity.name })
+  const deleteConfirmMessage = targetEntity
+    ? t('projectsCategories.deleteConfirm', { name: targetEntity.name })
     : ''
-  const isDeleting = projects.remove.isPending || categories.remove.isPending
 
   return {
     activeTab,
@@ -174,9 +160,7 @@ export function useProjectsPage() {
     search,
     setSearch,
     formOpened,
-    openForm,
     closeForm,
-    editingEntity,
     isLoading,
     isError,
     isSubmitting,
